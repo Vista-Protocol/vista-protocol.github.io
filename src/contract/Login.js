@@ -24,7 +24,7 @@ const Login = () => {
         );
     }
 
-    console.log(user);
+    // console.log(user.get('ethAddress'));
 
     return (
         <div>

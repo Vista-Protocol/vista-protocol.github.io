@@ -6,50 +6,74 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-const bull = (
-    <Box
-        component="span"
-        sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-    >
-        •
-    </Box>
-);
+export default function BasicCard({ position }) {
+    const { balance, usdt, index } = position;
 
-export default function BasicCard() {
     return (
         <Card sx={{ minWidth: 275 }}>
             <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                    Your Position
+                </Typography>
+
                 <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    quote_asset_amount (TVL)
+                    Outside USDT Balance
+                </Typography>
+                <Typography variant="h5" component="div">
+                    {balance}
+                </Typography>
+                
+                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                    Deposited USDT Balance
+                </Typography>
+                <Typography variant="h5" component="div">
+                    {usdt}
+                </Typography>
+            </CardContent>
+
+            <CardActions>
+                <Button
+                    variant='contained'
+                >
+                    Deposit
+                </Button>
+                <Button
+                    variant='contained'
+                    color='error'
+                >
+                    Withdraw
+                </Button>
+            </CardActions>
+
+            <CardContent>
+                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                    Avalanche-10 (ATEN) Token Balance
+                </Typography>
+                <Typography variant="h5" component="div">
+                    {index}
+                </Typography>
+                
+                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                    Notional Value
                 </Typography>
                 <Typography variant="h5" component="div">
                     9
                 </Typography>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    base_asset_amount
-                </Typography>
-                <Typography variant="h5" component="div">
-                    999
-                </Typography>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    k
-                </Typography>
-                <Typography variant="h5" component="div">
-                    999
-                </Typography>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    mark_price
-                </Typography>
-                <Typography variant="h5" component="div">
-                    999
-                </Typography>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    oracle_price
-                </Typography>
-                <Typography variant="h5" component="div">
-                    999
-                </Typography>
             </CardContent>
+
+            <CardActions>
+                <Button
+                    variant='contained'
+                >
+                    Buy
+                </Button>
+                <Button
+                    variant='contained'
+                    color='error'
+                >
+                    Sell
+                </Button>
+            </CardActions>
         </Card>
     );
 }

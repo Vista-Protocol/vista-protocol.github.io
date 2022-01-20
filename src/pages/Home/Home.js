@@ -1,27 +1,55 @@
 import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import { styled } from '@mui/material/styles';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import Usdt from './Usdt';
-import Index from './Index';
-import State from './State';
+import Prompt from './Prompt';
+import Prospectus from './Prospectus';
+import Description from './Description';
 
-const Item = styled(Paper)(({ theme }) => ({
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
-
-export default function DirectionStack() {
+export default function SimpleAccordion() {
     return (
         <div>
-            <Stack direction="row" spacing={2}>
-                <Usdt />
-                <Index />
-                <State />
-            </Stack>
+            <Description />
+
+            <Accordion>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                >
+                    <Typography>
+                        Description
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Description />
+                </AccordionDetails>
+            </Accordion>
+            <Accordion>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                >
+                    <Typography>
+                        Prospectus
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Prospectus />
+                </AccordionDetails>
+            </Accordion>
+            <Accordion>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                >
+                    <Typography>
+                        Prompt
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Prompt />
+                </AccordionDetails>
+            </Accordion>
         </div>
     );
 }

@@ -18,10 +18,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 import Prompt from './pages/Prompt/Prompt';
-import About from './pages/About/About';
+import Trade from './pages/Trade/Trade';
 import Home from './pages/Home/Home';
 
-import Login from './Login';
+import Login from './contract/Login';
 
 const drawerWidth = 240;
 
@@ -36,7 +36,7 @@ function ResponsiveDrawer(props) {
 
     const pages = {
         Home: <Home />,
-        About: <About />,
+        Trade: <Trade />,
         Prompt: <Prompt />,
     }
 

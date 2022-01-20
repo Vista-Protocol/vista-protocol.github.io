@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
+import Moralis from "moralis";
 import { MoralisProvider } from "react-moralis";
 
 import CssBaseline from '@mui/material/CssBaseline';
