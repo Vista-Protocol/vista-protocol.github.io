@@ -1,53 +1,49 @@
 import * as React from 'react';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import { styled } from '@mui/material/styles';
+
+import { useMoralis } from "react-moralis";
+import axios from 'axios';
+import CoinMarketCap from 'coinmarketcap-api';
 
 import Position from './Position';
 import Amm from './Amm';
 import Loading from './Loading';
 
-import { useMoralis } from "react-moralis";
-import { useMoralisWeb3Api } from "react-moralis";
-import abi from '../../contract/abi.json';
-import Web3 from 'web3';
+const CMC_PRO_API_KEY = '3d286c45-bb8c-483f-8165-6a89567c11d0';
+const client = new CoinMarketCap(CMC_PRO_API_KEY);
 
-const contractAddress = '0xC24Fe6B210da4Db13eB69cff191692755948BF58';
+async function get_quotes() {
+    const url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+    const ids = '1975,2539,4056,5631,5805,5821,5829,5892,6758,6951'
+    const params = {
+        'id': ids,
+    }
 
-// contract details below
-const options = {
-    chain: 'avalanche testnet',
-    address: '0xC24Fe6B210da4Db13eB69cff191692755948BF58',
-    abi,
+    const CMC = '3d286c45-bb8c-483f-8165-6a89567c11d0';
+    const headers = {
+        'Accepts': 'application/json',
+        'X-CMC_PRO_API_KEY': CMC,
+        // 'Accept-Encoding': 'deflate, gzip'
+    }
+
+    const resp = await axios.get(url, { params, headers });
+    return resp.data;
 }
 
 export default function DirectionStack({ contract }) {
-    const { authenticate, isAuthenticated, user, logout } = useMoralis();
-    const Web3Api = useMoralisWeb3Api()
-
-    const [ammState, setAmmState] = React.useState();
+    const { user } = useMoralis();
     const [position, setPosition] = React.useState();
 
     const account = user.get('ethAddress');
 
-    const getAmmState = async () => {
-        const promises = [
-            contract.methods.quote().call(),
-            contract.methods.base().call(),
-        ];
-
-        const values = await Promise.all(promises);
-        const [
-            quote_asset_amount, base_asset_amount, k, mark_price,
-        ] = values;
-        const obj = {
-            quote_asset_amount, base_asset_amount, k, mark_price,
-        };
-
-        return obj;
-    }
-
     const getPosition = async () => {
+        const composition = await contract.methods.composition().call();
+        console.log(composition);
+
+        const id = [1975,2539,4056,5631,5805,5821,5829,5892,6758,6951];
+        const resp = await client.getQuotes({ id });
+        console.log(resp);
+
         const promises = [
             contract.methods.quote().call(),
             contract.methods.base().call(),
@@ -68,13 +64,12 @@ export default function DirectionStack({ contract }) {
 
     React.useEffect(() => {
         getPosition().then(setPosition);
-        // getAmmState().then(setAmmState);
     }, [])
 
     if (!position) {
         return (
             <div>
-                {/* <Loading /> */}
+                <Loading />
             </div>
         );
     }

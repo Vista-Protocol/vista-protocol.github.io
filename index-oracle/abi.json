@@ -61,19 +61,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "admin",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -87,25 +74,6 @@
 			}
 		],
 		"name": "allowance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "amounts",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -356,7 +324,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "quote",
+		"name": "price",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -368,21 +336,16 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "quote",
+		"outputs": [
 			{
-				"internalType": "uint256[10]",
-				"name": "ids_",
-				"type": "uint256[10]"
-			},
-			{
-				"internalType": "uint256[10]",
-				"name": "amounts_",
-				"type": "uint256[10]"
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
-		"name": "rebalance",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -401,12 +364,51 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256[10]",
+				"name": "ids_",
+				"type": "uint256[10]"
+			}
+		],
+		"name": "set_ids",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "amount",
 				"type": "uint256"
 			}
 		],
 		"name": "set_k",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "set_price",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256[10]",
+				"name": "weights_",
+				"type": "uint256[10]"
+			}
+		],
+		"name": "set_weights",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -499,6 +501,25 @@
 			}
 		],
 		"name": "usdt",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "weights",
 		"outputs": [
 			{
 				"internalType": "uint256",

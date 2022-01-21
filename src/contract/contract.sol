@@ -13,7 +13,6 @@ contract Index is ERC20("Tether USD", "USDT.e") {
     uint256 public quote;
     uint256 public base;
     uint256 public k;
-    uint256 public price;
     address public admin;
 
     uint256 constant multiple = 10 ** 6;
@@ -25,32 +24,13 @@ contract Index is ERC20("Tether USD", "USDT.e") {
     mapping(address => uint256) public usdt;
     mapping(address => uint256) public index;
 
-    function get_balance() public view returns (uint256) {
-        return balanceOf(msg.sender);
-    }
-
-    function get_usdt() public view returns (uint256) {
-        return usdt[msg.sender];
-    }
-
-    function get_index() public view returns (uint256) {
-        return usdt[msg.sender];
-    }
-
-    event txn(bool buy, uint256 amount, uint256 index_balance);
-
     // functions
-
-    function update_price() public {
-        price = quote * 10 ** 6 / base;
-    }
 
     constructor(uint256 amount) {
         admin = msg.sender;
         quote = amount;
         base = quote;
         k = quote * base;
-        update_price();
     }
 
     // will not be in mainnet version, just to supply fake USDT
@@ -68,37 +48,31 @@ contract Index is ERC20("Tether USD", "USDT.e") {
         k = amount;
     }
 
-    function modify() public {
-        // call external api which calls rebalance below
-    }
-
-    // called by external api
     function rebalance(uint256[10] memory ids_, uint256[10] memory amounts_) public {
-        for (uint i = 0; i < 10; i++) {
-            ids[i] = ids_[i];
-            amounts[i] = amounts_[i];
-        }
+        ids = ids_;
+        amounts = amounts_;
     }
 
-    // user functions
+    function composition() public view returns (uint256[10] memory, uint256[10] memory) {
+        return (ids, amounts);
+    }
 
-    // user sends usdt to contract admin
+    // deposited usdt <-> regular usdt
+
     function deposit_usdt(uint256 amount) public {
-        transfer(admin, amount);
+        transfer(address(this), amount);
+        // above will halt function if msg.sender doesn't have enough in balance
         usdt[msg.sender] += amount;
     }
 
-    // contract admin sends usdt to user
-    // must be called by admin
-    // will revert if admin doesn't have enough real usdt
-    function withdraw_usdt(address user, uint256 amount) public {
-        require(amount <= usdt[user]);
-        transfer(user, amount);
-        usdt[user] -= amount;
+    function withdraw_usdt(uint256 amount) public payable {
+        require(usdt[msg.sender] >= amount);
+        usdt[msg.sender] -= amount;
+        ERC20(address(this)).transfer(msg.sender, amount);
     }
 
-    // like mutual fund, invest $ and get some share of fund
-    // raise quote amt and lower base amt
+    // deposited usdt <-> index token
+
     function buy_index(uint256 amount_index) public payable {
         uint256 base1 = base - amount_index;
         uint256 quote1 = k / base1;
@@ -112,11 +86,8 @@ contract Index is ERC20("Tether USD", "USDT.e") {
 
         quote = quote1;
         base = base1;
-        update_price();
     }
 	
-    // amount in $
-    // lower quote amt and raise base amt
     function sell_index(uint256 amount_index) public {
         require(index[msg.sender] >= amount_index);
 
@@ -129,6 +100,5 @@ contract Index is ERC20("Tether USD", "USDT.e") {
 
         quote = quote1;
         base = base1;
-        update_price();
     }
 }

@@ -23,14 +23,14 @@ import Web3 from 'web3';
 
 import Trade from './pages/Trade/Trade';
 import Home from './pages/Home/Home';
-import Login from './contract/Login';
+import Login from './Login';
 
-const contractAddress = '0xC24Fe6B210da4Db13eB69cff191692755948BF58';
+const contractAddress = '0x15bb76883b3c1bE9585BdC19360F263f659cCd1f';
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
     const { window } = props;
-    const { authenticate, isAuthenticated, user, logout } = useMoralis();
+    const { user } = useMoralis();
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [page, setPage] = React.useState('Home');
     const [contract, setContract] = React.useState();

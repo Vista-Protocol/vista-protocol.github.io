@@ -7,13 +7,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-function buyPrice(amount) {
-
-}
-
 export default function FormDialog({ name, text, color, func, position }) {
     const [open, setOpen] = React.useState(false);
-    const [amount, setAmount] = React.useState();
+    const [amount, setAmount] = React.useState(0);
 
     const multiple = 10 ** 6;
 
@@ -79,7 +75,12 @@ export default function FormDialog({ name, text, color, func, position }) {
                         variant="standard"
 
                         value={amount}
-                        onChange={event => setAmount(event.target.value)}
+                        onChange={event => {
+                            const value = event.target.value;
+                            if (value > 0) {
+                                setAmount(value);
+                            }}
+                        }
                     />
                 </DialogContent>
 

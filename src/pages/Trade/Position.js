@@ -17,19 +17,19 @@ export default function BasicCard({ position, contract }) {
     const from = user.get('ethAddress');
     const admin = '0xc59E499d8E789986A08547ae5294D14C5dd91D9f';
 
-    async function deposit(amount) {
+    async function deposit_usdt(amount) {
         await contract.methods.deposit_usdt(amount * 10 ** 6).send({ from });
     }
 
-    async function withdraw(amount) {
-        await contract.methods.withdraw_usdt(from, amount * 10 ** 6).send({ from: admin });
+    async function withdraw_usdt(amount) {
+        await contract.methods.withdraw_usdt(amount * 10 ** 6).send({ from });
     }
 
-    async function buy(amount) {
+    async function buy_index(amount) {
         await contract.methods.buy_index(amount * 10 ** 6).send({ from });
     }
 
-    async function sell(amount) {
+    async function sell_index(amount) {
         await contract.methods.sell_index(amount * 10 ** 6).send({ from });
     }
 
@@ -60,14 +60,14 @@ export default function BasicCard({ position, contract }) {
                 <Transact
                     name='Deposit'
                     text='Escrowed USDT can be used to buy ATEN. Depositing does not constitute buying ATEN.'
-                    func={deposit}
+                    func={deposit_usdt}
                 />
 
                 <Transact
                     name='Withdraw'
                     text='Transfer USDT out of escrow. Withdrawn USDT can be used outside this contract like normal.'
                     color='error'
-                    func={withdraw}
+                    func={withdraw_usdt}
                 />
             </CardActions>
 
@@ -90,14 +90,14 @@ export default function BasicCard({ position, contract }) {
             <CardActions>
                 <Transact
                     name='Buy'
-                    func={buy}
+                    func={buy_index}
                     position={position}
                 />
                 
                 <Transact
                     name='Sell'
                     color='error'
-                    func={sell}
+                    func={sell_index}
                     position={position}
                 />
             </CardActions>
