@@ -19,25 +19,14 @@ export default function SimpleAccordion() {
                     expandIcon={<ExpandMoreIcon />}
                 >
                     <Typography>
-                        Description
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Description />
-                </AccordionDetails>
-            </Accordion>
-            <Accordion>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                >
-                    <Typography>
-                        Prospectus
+                        Index Constituents at Inception
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Prospectus />
                 </AccordionDetails>
             </Accordion>
+            
             <Accordion>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}

@@ -5,7 +5,7 @@ import { Button, Avatar } from '@mui/material';
 const moralisIcon = 'https://moralis.io/wp-content/uploads/2021/06/cropped-Moralis-Favicon-Glass.png';
 const metamaskIcon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png';
 
-const Login = () => {
+const Login = ({ setPage }) => {
     const { authenticate, isAuthenticated, user, logout } = useMoralis();
 
     if (!isAuthenticated) {
@@ -29,7 +29,10 @@ const Login = () => {
     return (
         <div>
             <Button
-                onClick={() => logout()}
+                onClick={() => {
+                    setPage('Home');
+                    logout();
+                }}
                 color='inherit'
                 startIcon={<Avatar
                     src={metamaskIcon}

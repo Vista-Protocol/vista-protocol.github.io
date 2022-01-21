@@ -17,30 +17,46 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-import Prompt from './pages/Prompt/Prompt';
+import { useMoralis } from "react-moralis";
+import abi from './contract/abi.json';
+import Web3 from 'web3';
+
 import Trade from './pages/Trade/Trade';
 import Home from './pages/Home/Home';
-
 import Login from './contract/Login';
 
+const contractAddress = '0xC24Fe6B210da4Db13eB69cff191692755948BF58';
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
     const { window } = props;
+    const { authenticate, isAuthenticated, user, logout } = useMoralis();
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [page, setPage] = React.useState('Home');
+    const [contract, setContract] = React.useState();
+
+    React.useEffect(() => {
+        console.log(Web3);
+        if (Web3.givenProvider === null) {
+            return;
+        }
+        const web3 = new Web3(Web3.givenProvider);
+        const c = new web3.eth.Contract(abi, contractAddress);
+        setContract(c);
+    }, []);
+
+    const pages = {
+        Home: <Home />,
+        Trade: <Trade
+            contract={contract}
+        />,
+    }
+
+    console.log(page);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
-
-    const pages = {
-        Home: <Home />,
-        Trade: <Trade />,
-        Prompt: <Prompt />,
-    }
-
-    console.log(page);
 
     const drawer = (
         <div>
@@ -51,6 +67,7 @@ function ResponsiveDrawer(props) {
                     <ListItem
                         button key={text}
                         onClick={event => setPage(text)}
+                        disabled={text === 'Trade' && !user}
                     >
                         <ListItemText primary={text} />
                     </ListItem>
@@ -86,7 +103,9 @@ function ResponsiveDrawer(props) {
                         Avalanche Index Fund
                     </Typography>
 
-                    <Login />
+                    <Login
+                        setPage={setPage}
+                    />
                 </Toolbar>
             </AppBar>
             <Box

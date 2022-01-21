@@ -4,34 +4,37 @@ import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 
 import Position from './Position';
-import Index from './Index';
 import Amm from './Amm';
+import Loading from './Loading';
 
 import { useMoralis } from "react-moralis";
 import { useMoralisWeb3Api } from "react-moralis";
 import abi from '../../contract/abi.json';
+import Web3 from 'web3';
 
+const contractAddress = '0xC24Fe6B210da4Db13eB69cff191692755948BF58';
+
+// contract details below
 const options = {
     chain: 'avalanche testnet',
     address: '0xC24Fe6B210da4Db13eB69cff191692755948BF58',
     abi,
 }
 
-export default function DirectionStack() {
+export default function DirectionStack({ contract }) {
     const { authenticate, isAuthenticated, user, logout } = useMoralis();
     const Web3Api = useMoralisWeb3Api()
 
     const [ammState, setAmmState] = React.useState();
     const [position, setPosition] = React.useState();
 
+    const account = user.get('ethAddress');
+
     const getAmmState = async () => {
-        var keys = 'quote base k price'.split(' ');
-        const promises = keys.map(function_name => (
-            Web3Api.native.runContractFunction({
-                function_name,
-                ...options,
-            })
-        ));
+        const promises = [
+            contract.methods.quote().call(),
+            contract.methods.base().call(),
+        ];
 
         const values = await Promise.all(promises);
         const [
@@ -45,45 +48,47 @@ export default function DirectionStack() {
     }
 
     const getPosition = async () => {
-        if (!user.get('ethAddress')) {
-            return;
-        }
-
-        var keys = 'get_balance get_usdt get_index'.split(' ');
-        const promises = keys.map(function_name => (
-            Web3Api.native.runContractFunction({
-                function_name,
-                ...options,
-            })
-        ));
+        const promises = [
+            contract.methods.quote().call(),
+            contract.methods.base().call(),
+            contract.methods.balanceOf(account).call(),
+            contract.methods.usdt(account).call(),
+            contract.methods.index(account).call(),
+        ];
 
         const values = await Promise.all(promises);
-        const [ balance, usdt, index ] = values;
-        const obj = { balance, usdt, index };
+        const [ quote, base, balance, usdt, index ] = values;
+        const obj = { quote, base, balance, usdt, index };
+
+        console.log(user.get('ethAddress'));
+        console.log(obj);
 
         return obj;
     }
 
     React.useEffect(() => {
         getPosition().then(setPosition);
-        getAmmState().then(setAmmState);
+        // getAmmState().then(setAmmState);
     }, [])
 
-    if (!ammState) {
-        return <div />;
+    if (!position) {
+        return (
+            <div>
+                {/* <Loading /> */}
+            </div>
+        );
     }
-
-    console.log(position)
 
     return (
         <div>
             <Stack direction="row" spacing={2}>
                 <Position
                     position={position}
+                    contract={contract}
                 />
 
                 <Amm
-                    ammState={ammState}
+                    position={position}
                 />
             </Stack>
         </div>
