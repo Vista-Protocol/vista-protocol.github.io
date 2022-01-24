@@ -2,6 +2,7 @@ import * as React from 'react';
 import Stack from '@mui/material/Stack';
 
 import { useMoralis } from "react-moralis";
+import { useMoralisWeb3Api, useMoralisWeb3ApiCall } from "react-moralis";
 import axios from 'axios';
 import CoinMarketCap from 'coinmarketcap-api';
 
@@ -32,6 +33,7 @@ async function get_quotes() {
 
 export default function DirectionStack({ contract }) {
     const { user } = useMoralis();
+    const { token } = useMoralisWeb3Api();
     const [position, setPosition] = React.useState();
 
     const account = user.get('ethAddress');
@@ -40,9 +42,15 @@ export default function DirectionStack({ contract }) {
         const composition = await contract.methods.composition().call();
         console.log(composition);
 
+        // avax contract address
+        const address = '0x1ce0c2827e2ef14d5c4f29a091d735a204794041';
+        // const chain = 'avalanche';
+        const price = await token.getTokenPrice({ address });
+        console.log(price);
+
         const id = [1975,2539,4056,5631,5805,5821,5829,5892,6758,6951];
-        const resp = await client.getQuotes({ id });
-        console.log(resp);
+        // const resp = await client.getQuotes({ id });
+        // console.log(resp);
 
         const promises = [
             contract.methods.quote().call(),

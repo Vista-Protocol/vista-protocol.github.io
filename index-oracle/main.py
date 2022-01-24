@@ -69,6 +69,9 @@ def main() -> int:
     print(component_ids)
     print(component_weights)
 
+    # component_ids = [1975, 2539, 4056, 5631, 5805, 5821, 5829, 5892, 6758, 6951]
+    component_weights = [4649, 243088, 97247, 21144, 1225, 136061, 82415, 4308, 16866, 7853076]
+
     quotes = get_quotes(component_ids)
     quotes_frame = pd.DataFrame(quotes).transpose()
 
