@@ -17,19 +17,22 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-import Trade from './pages/Trade/App';
-import Home from './pages/Home/Home';
-import Login from './Login';
-
 import { useMoralis } from "react-moralis";
 import Web3 from 'web3';
+
+import Trade from './pages/Trade/App';
+import Home from './pages/Home/Home';
+
+import DepositButton from './pages/TopBar/DepositButton';
+import Login from './pages/TopBar/Login';
+
+import logo from './static/logo.svg';
 
 import abi_avaperps from './contracts/abi_avaperps.json';
 import abi_erc20copy from './contracts/abi_erc20copy.json';
 const address_avaperps = '0xF1c79edE62cD228aE637464810CCD12C30ad1A65';
 const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 
-const contractAddress = '0x15bb76883b3c1bE9585BdC19360F263f659cCd1f';
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
@@ -99,6 +102,10 @@ function ResponsiveDrawer(props) {
                     width: { sm: `calc(100% - ${drawerWidth}px)` },
                     ml: { sm: `${drawerWidth}px` },
                 }}
+                style={{
+                    color: 'fireBrick',
+                    // backgroundColor: 'black'
+                }}
             >
                 <Toolbar>
                     <IconButton
@@ -110,9 +117,22 @@ function ResponsiveDrawer(props) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                        Avalanche Index Fund
+                    
+                    <Box mr={2}>
+                        <img src={logo} alt="logo" height="55px" />
+                    </Box>
+
+                    <Typography
+                        variant="h4" noWrap component="div"
+                        sx={{ flexGrow: 1 }}
+                    >
+                        Yin Finance
                     </Typography>
+
+                    <DepositButton
+                        contract_erc20copy={contract_erc20copy}
+                        contract_avaperps={contract_avaperps}
+                    />
 
                     <Login
                         setPage={setPage}

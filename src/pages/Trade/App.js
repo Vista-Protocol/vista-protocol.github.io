@@ -25,15 +25,6 @@ const cap = 5;
 
 export default function App({ contract_avaperps, contract_erc20copy }) {
     const { user } = useMoralis();
-    // const { token, native } = useMoralisWeb3Api();
-
-    const [avax_price, set_avax_price] = React.useState();
-
-    const [amm_base, set_amm_base] = React.useState();
-    const [amm_quote, set_amm_quote] = React.useState();
-
-    const [user_base, set_user_base] = React.useState();
-    const [user_collateral, set_user_collateral] = React.useState();
 
     const [state, setState] = React.useState();
 
@@ -54,8 +45,8 @@ export default function App({ contract_avaperps, contract_erc20copy }) {
         const promises = [
             contract_avaperps.methods.get_amm_base().call(),
             contract_avaperps.methods.get_amm_quote().call(),
-            contract_avaperps.methods.get_user_base().call(),
-            contract_avaperps.methods.get_user_collateral().call(),
+            contract_avaperps.methods.get_user_base().call({ from }),
+            contract_avaperps.methods.get_user_collateral().call({ from }),
             axios.get(url),
         ];
 
@@ -74,25 +65,6 @@ export default function App({ contract_avaperps, contract_erc20copy }) {
         console.log(state);
 
         return obj;
-
-        resp = await contract_avaperps.methods.get_amm_base().call();
-        set_amm_base(resp);
-
-        resp = await contract_avaperps.methods.get_amm_quote().call();
-        set_amm_quote(resp);
-
-        resp = await contract_avaperps.methods.get_user_base().call({ from });
-        set_user_base(resp);
-
-        resp = await contract_avaperps.methods.get_user_collateral().call({ from });
-        set_user_collateral(resp);
-
-        resp = await axios.get(url);
-        set_avax_price(
-            resp.data.data.items[0].quote_rate
-        );
-
-        return;
     }
 
     React.useEffect(() => {
@@ -108,16 +80,7 @@ export default function App({ contract_avaperps, contract_erc20copy }) {
     }
 
     return (
-        <Box
-        >
-            {/* <TopBar
-                contract_avaperps={contract_avaperps}
-                contract_erc20copy={contract_erc20copy}
-                user_collateral={user_collateral}
-            /> */}
-            <Toolbar />
-            {/* <br /> */}
-
+        <Box>
             <Grid
                 container
                 justifyContent="center"
