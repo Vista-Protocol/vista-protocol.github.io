@@ -17,13 +17,17 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-import { useMoralis } from "react-moralis";
-import abi from './contract/abi.json';
-import Web3 from 'web3';
-
-import Trade from './pages/Trade/Trade';
+import Trade from './pages/Trade/App';
 import Home from './pages/Home/Home';
 import Login from './Login';
+
+import { useMoralis } from "react-moralis";
+import Web3 from 'web3';
+
+import abi_avaperps from './contracts/abi_avaperps.json';
+import abi_erc20copy from './contracts/abi_erc20copy.json';
+const address_avaperps = '0xF1c79edE62cD228aE637464810CCD12C30ad1A65';
+const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 
 const contractAddress = '0x15bb76883b3c1bE9585BdC19360F263f659cCd1f';
 const drawerWidth = 240;
@@ -33,7 +37,8 @@ function ResponsiveDrawer(props) {
     const { user } = useMoralis();
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [page, setPage] = React.useState('Home');
-    const [contract, setContract] = React.useState();
+    const [contract_avaperps, set_contract_avaperps] = React.useState();
+    const [contract_erc20copy, set_contract_erc20copy] = React.useState();
 
     React.useEffect(() => {
         console.log(Web3);
@@ -41,14 +46,20 @@ function ResponsiveDrawer(props) {
             return;
         }
         const web3 = new Web3(Web3.givenProvider);
-        const c = new web3.eth.Contract(abi, contractAddress);
-        setContract(c);
+        let resp;
+
+        resp = new web3.eth.Contract(abi_avaperps, address_avaperps);
+        set_contract_avaperps(resp);
+        
+        resp = new web3.eth.Contract(abi_erc20copy, address_erc20copy);
+        set_contract_erc20copy(resp);
     }, []);
 
     const pages = {
         Home: <Home />,
         Trade: <Trade
-            contract={contract}
+            contract_erc20copy={contract_erc20copy}
+            contract_avaperps={contract_avaperps}
         />,
     }
 

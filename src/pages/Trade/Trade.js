@@ -45,8 +45,8 @@ export default function DirectionStack({ contract }) {
         // avax contract address
         const address = '0x1ce0c2827e2ef14d5c4f29a091d735a204794041';
         // const chain = 'avalanche';
-        const price = await token.getTokenPrice({ address });
-        console.log(price);
+        // const price = await token.getTokenPrice({ address });
+        // console.log(price);
 
         const id = [1975,2539,4056,5631,5805,5821,5829,5892,6758,6951];
         // const resp = await client.getQuotes({ id });
