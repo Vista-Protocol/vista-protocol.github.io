@@ -5,6 +5,8 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { Typography, Stack } from '@mui/material';
 
+import TimeComponent from './TimeComponent';
+
 const peg_multiplier = 10 ** 6;
 const cap = 5;
 
@@ -30,8 +32,17 @@ export default function BasicGrid({ state }) {
         avax_price, user_base, user_collateral, amm_base, amm_quote
     } = state;
 
+    const perp_price = amm_quote / amm_base;
+    const portfolio_value = (avax_price * Math.abs(user_base) / peg_multiplier).toFixed(2);
+
+    const funding_rate = (perp_price - avax_price) / avax_price / 24;
+    const apy = Math.pow(1 + funding_rate, 24 * 365).toFixed(2) - 1;
+    console.log(funding_rate, apy);
+
     const position = `
-        ${Math.abs(user_base) / peg_multiplier}
+        ${
+            (Math.abs(user_base) / peg_multiplier).toFixed(2)
+        }
         ${user_base < 0 ? 'SHORT' : 'LONG'}
         AVAX-PERP
     `;
@@ -63,12 +74,7 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             
                 <GridItem>
-                    {
-                        (
-                            Math.abs(user_base) * avax_price / cap
-                            + Number(user_collateral)
-                        ) / peg_multiplier
-                    } USDC
+                    {portfolio_value} USDC
                     
                     <Typography
                         variant='subtitle2'
@@ -78,7 +84,9 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             
                 <GridItem>
-                    {user_collateral / peg_multiplier} USDC
+                    {
+                        (user_collateral / peg_multiplier).toFixed(2)
+                    } USDC
                     
                     <Typography
                         variant='subtitle2'
@@ -112,7 +120,9 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             
                 <GridItem>
-                    {amm_quote / amm_base} USDC
+                    {
+                        perp_price.toFixed(2)
+                    } USDC
                     
                     <Typography
                         variant='subtitle2'
@@ -122,17 +132,21 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             
                 <GridItem>
-                    {avax_price} USDC
+                    {
+                        avax_price.toFixed(2)
+                    } USDC
                     
                     <Typography
                         variant='subtitle2'
                     >
-                        AVAX Price (Live from Covalent)
+                        AVAX Price
                     </Typography>
                 </GridItem>
             
                 <GridItem>
-                    0% in 11:17
+                    {
+                        (funding_rate * 100).toFixed(2)
+                    }% in <TimeComponent />
                     
                     <Typography
                         variant='subtitle2'
@@ -142,7 +156,7 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             
                 <GridItem>
-                    0% APY
+                    {apy}% APY
                     
                     <Typography
                         variant='subtitle2'

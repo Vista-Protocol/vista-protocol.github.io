@@ -66,8 +66,8 @@ def get_quotes(component_ids: list) -> dict:
 
 def main() -> int:
     component_ids, component_weights = contract.functions.composition().call()
-    print(component_ids)
-    print(component_weights)
+    print('component_ids', component_ids)
+    print('component_weights', component_weights)
 
     # component_ids = [1975, 2539, 4056, 5631, 5805, 5821, 5829, 5892, 6758, 6951]
     component_weights = [4649, 243088, 97247, 21144, 1225, 136061, 82415, 4308, 16866, 7853076]
@@ -79,13 +79,15 @@ def main() -> int:
         row['USD']['price']
         for row in quotes_frame['quote']
     ]
-    print(component_prices)
+    print('component_prices', component_prices)
 
     weighted_prices = np.multiply(component_weights, component_prices)
-    print(weighted_prices)
+    print('weighted_prices', weighted_prices)
 
     index_price = sum(weighted_prices)
-    print(index_price)
+    print('index_price', index_price)
+    
+    print('adjusted_weight', weighted_prices / index_price * 100)
 
     if any(weighted_prices > index_price / 5):
         component_weights = np.around(
