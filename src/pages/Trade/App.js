@@ -46,6 +46,7 @@ export default function App({ contract_avaperps, contract_erc20copy, page }) {
             contract_avaperps.methods.amm_base().call(),
             contract_avaperps.methods.amm_quote().call(),
             user ? contract_avaperps.methods.user_base().call({ from }) : 'Not logged in',
+            user ? contract_avaperps.methods.user_quote().call({ from }) : 'Not logged in',
             user ? contract_avaperps.methods.user_collateral().call({ from }) : 'Not logged in',
             axios.get(url),
         ];
@@ -53,13 +54,13 @@ export default function App({ contract_avaperps, contract_erc20copy, page }) {
         const values = await Promise.all(promises);
         // console.log(values)
         let [
-            amm_base, amm_quote, user_base, user_collateral, resp
+            amm_base, amm_quote, user_base, user_quote, user_collateral, resp
         ] = values;
 
         const avax_price = resp.data.data.items[0].quote_rate;
 
         const obj = {
-            amm_base, amm_quote, user_base, user_collateral, avax_price
+            amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price
         };
 
         setState(obj);
@@ -93,6 +94,7 @@ export default function App({ contract_avaperps, contract_erc20copy, page }) {
                 <Item>
                     <LabTabs
                         state={state}
+                        contract_avaperps={contract_avaperps}
                     />
                 </Item>
             </Grid>

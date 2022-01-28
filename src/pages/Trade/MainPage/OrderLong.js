@@ -4,6 +4,7 @@ import { Typography, TextField, AppBar, Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
+import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -15,31 +16,37 @@ const Item = styled(Paper)(({ theme }) => ({
 const cap = 5;
 const peg_multiplier = 10 ** 6;
 
-export default function LabTabs({ avax_price, user_collateral }) {
+export default function OrderLong({ state, contract_avaperps, short = false }) {
     const [amount, setAmount] = React.useState(0);
+    const { user } = useMoralis();
+
+    const {
+        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price
+    } = state;
+
+    const perp_price = amm_quote / amm_base;
+    const k = amm_quote * amm_base;
+
+    function open_long_base_amount() {
+        const quote1 = Number(amm_quote) + amount * peg_multiplier;
+        const base1 = k / quote1;
+        const base = amm_base - base1;
+        return Math.abs(
+            base / peg_multiplier
+        ).toFixed(2);
+    }
+
+    function close_long_base_amount() {
+        const quote1 = Number(amm_quote) - amount * peg_multiplier;
+        const base1 = k / quote1;
+        const base = amm_base - base1;
+        return Math.abs(
+            base / peg_multiplier
+        ).toFixed(2);
+    }
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={6}>
-                <Typography
-                    variant='h4'
-                >
-                    {amount * avax_price}
-                </Typography>
-            </Grid>
-
-            <Grid item xs={6}>
-                <Item>
-                    USDC
-                </Item>
-
-                <Typography
-                    variant='body2'
-                >
-                    Borrowing Power: {user_collateral * cap / peg_multiplier}
-                </Typography>
-            </Grid>
-            
             <Grid item xs={6}>
                 <TextField
                     type='number'
@@ -53,13 +60,43 @@ export default function LabTabs({ avax_price, user_collateral }) {
 
             <Grid item xs={6}>
                 <Item>
+                    USDC
+                </Item>
+
+                <Typography
+                    variant='body2'
+                >
+                    Borrowing Power: {
+                        (user_quote / peg_multiplier).toFixed(2)
+                    }
+                </Typography>
+            </Grid>
+            
+            <Grid item xs={6}>
+                <Typography
+                    variant='h4'
+                >
+                    {
+                        (
+                            amount / perp_price
+                        ).toFixed(2)
+                    } (EST.)
+                </Typography>
+            </Grid>
+
+            <Grid item xs={6}>
+                <Item>
                     AVAX-PERP
                 </Item>
 
                 <Typography
                     variant='body2'
-                    >
-                    Max Size: {user_collateral * cap / avax_price / peg_multiplier}
+                >
+                    Max Size: {
+                        (
+                            user_quote / perp_price / peg_multiplier
+                        ).toFixed(2)
+                    }
                 </Typography>
             </Grid>
 
@@ -68,7 +105,7 @@ export default function LabTabs({ avax_price, user_collateral }) {
                     variant='body2'
                     style={{ textAlign: 'left' }}
                 >
-                    1 AVAX-PERP = {avax_price} USDC
+                    1 AVAX-PERP = {perp_price.toFixed(2)} USDC
                 </Typography>
             </Grid>
 
@@ -76,8 +113,15 @@ export default function LabTabs({ avax_price, user_collateral }) {
                 <Button
                     variant='contained'
                     style={{ width: '100%' }}
+                    disabled={!user}
+                    onClick={async () => {
+                        const from = user.get('ethAddress');
+                        await contract_avaperps.methods.open_long(
+                            amount * peg_multiplier
+                        ).send({ from });
+                    }}
                 >
-                    Open Long: {amount} AVAX-PERP
+                    Open Long: {open_long_base_amount()} AVAX-PERP
                 </Button>
             </Grid>
 
@@ -85,8 +129,14 @@ export default function LabTabs({ avax_price, user_collateral }) {
                 <Button
                     variant='contained'
                     style={{ width: '100%' }}
+                    onClick={async () => {
+                        const from = user.get('ethAddress');
+                        await contract_avaperps.methods.close_long(
+                            amount * peg_multiplier
+                        ).send({ from });
+                    }}
                 >
-                    Close Long: {amount} AVAX-PERP
+                    Close Long: {close_long_base_amount()} AVAX-PERP
                 </Button>
             </Grid>
         </Grid>

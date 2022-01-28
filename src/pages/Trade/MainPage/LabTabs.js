@@ -44,14 +44,10 @@ function a11yProps(index) {
     };
 }
 
-export default function FullWidthTabs({ state }) {
+export default function LabTabs({ state, contract_avaperps }) {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
     console.log('labtabs')
-    
-    const {
-        avax_price, user_base, user_collateral, amm_base, amm_quote
-    } = state;
 
     const handleChange = (event, newValue) => {
         console.log(newValue)
@@ -85,14 +81,14 @@ export default function FullWidthTabs({ state }) {
             >
                 <TabPanel value={value} index={0} dir={theme.direction}>
                     <OrderLong
-                        user_collateral={user_collateral}
-                        avax_price={avax_price}
+                        contract_avaperps={contract_avaperps}
+                        state={state}
                     />
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                    <OrderLong
-                        user_collateral={user_collateral}
-                        avax_price={avax_price}
+                    <OrderShort
+                        contract_avaperps={contract_avaperps}
+                        state={state}
                     />
                 </TabPanel>
             </SwipeableViews>
