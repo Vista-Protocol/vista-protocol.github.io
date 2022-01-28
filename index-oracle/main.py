@@ -28,19 +28,22 @@ import os
 
 load_dotenv()
 CMC_PRO_API_KEY = os.getenv('CMC')
+private_key = os.getenv('private_key')
 
 provider = 'https://api.avax-test.network/ext/bc/C/rpc'
+provider = 'https://speedy-nodes-nyc.moralis.io/ca66f16031f65e247cfa902a/avalanche/testnet'
 w3 = Web3(Web3.HTTPProvider(provider))
 w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
-contract_address = '0x09182Ed52eC47268C054EEA06F43207726c233B4'
+contract_address = '0xA87B55f6F7F4EBe0602A725622c9376b9b4FDA37'
 with open('abi.json') as f:
     abi = json.load(f)
 
 contract = w3.eth.contract(address=contract_address, abi=abi)
-account = '0xc59E499d8E789986A08547ae5294D14C5dd91D9f'
+account = '0x42B221DFf0A38c56409032bD2b1D3E6f7cAEdb4B'
 w3.eth.defaultAccount = account
 
+peg_multiplier = 10 ** 6
 
 def get_quotes(component_ids: list) -> dict:
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
@@ -65,23 +68,23 @@ def get_quotes(component_ids: list) -> dict:
 
     return resp['data']
 
+# must be setter function
+def send_transaction(function):
+    nonce = w3.eth.getTransactionCount(account)
+    txn_dict = function.buildTransaction({
+        'nonce': nonce
+    })
+    signed_txn = w3.eth.account.signTransaction(txn_dict, private_key=private_key)
+    result = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    return result
+
 def main() -> int:
-    contract.functions.replace_token(1, 1).transact()
-
-    balance = contract.functions.tokens(1).send()
-    print('balance', balance)
-
-    return
-    
-    balance = contract.functions.usdt(account).call()
-    print('balance', balance)
-
-    component_ids, component_weights = contract.functions.composition().call()
+    component_ids, component_amounts = contract.functions.composition().call()
     print('component_ids', component_ids)
-    print('component_weights', component_weights)
+    print('component_amounts', component_amounts)
 
-    # component_ids = [1975, 2539, 4056, 5631, 5805, 5821, 5829, 5892, 6758, 6951]
-    component_weights = [4649, 243088, 97247, 21144, 1225, 136061, 82415, 4308, 16866, 7853076]
+    component_ids = [1975, 2539, 4056, 5631, 5805, 5821, 5829, 5892, 6758, 6951]
+    # component_amounts = [4649, 243088, 97247, 21144, 1225, 136061, 82415, 4308, 16866, 7853076]
 
     quotes = get_quotes(component_ids)
     quotes_frame = pd.DataFrame(quotes).transpose()
@@ -92,24 +95,29 @@ def main() -> int:
     ]
     print('component_prices', component_prices)
 
-    weighted_prices = np.multiply(component_weights, component_prices)
-    print('weighted_prices', weighted_prices)
+    component_values = np.multiply(component_amounts, component_prices)
+    print('component_values', component_values)
 
-    index_price = sum(weighted_prices)
-    print('index_price', index_price)
+    index_price = sum(component_values)
+    print('index_price', index_price / peg_multiplier)
     
-    print('adjusted_weight', weighted_prices / index_price * 100)
+    print('component_weights', component_values / index_price * 100)
 
-    if any(weighted_prices > index_price / 5):
-        component_weights = np.around(
+    if any(component_values > index_price / 5):
+        print('\nREBALANCE')
+
+        component_amounts = np.around(
             np.reciprocal(component_prices) * index_price / 10
         )
-        component_weights = list(map(int, component_weights))
-        print(component_weights)
+        component_amounts = list(map(int, component_amounts))
+        print('component_amounts', component_amounts)
 
-        component_ids = 10 * [False]
+        print('index_price', np.dot(component_amounts, component_prices) / peg_multiplier)
 
-        contract.functions.set_weights(component_weights).transact()
+        txn_hash = send_transaction(
+            contract.functions.set_amounts(component_amounts)
+        )
+        print('txn_hash', txn_hash)
 
 main()
 

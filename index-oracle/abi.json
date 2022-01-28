@@ -1,27 +1,5 @@
 [
 	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "fallback"
-	},
-	{
-		"inputs": [],
-		"name": "composition",
-		"outputs": [
-			{
-				"internalType": "uint256[10]",
-				"name": "",
-				"type": "uint256[10]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -30,7 +8,7 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "token_id",
+				"name": "id",
 				"type": "uint256"
 			}
 		],
@@ -43,13 +21,76 @@
 		"inputs": [
 			{
 				"internalType": "uint256[10]",
-				"name": "weights_",
+				"name": "amounts_",
 				"type": "uint256[10]"
 			}
 		],
-		"name": "set_weights",
+		"name": "set_amounts",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256[10]",
+				"name": "tokens_",
+				"type": "uint256[10]"
+			}
+		],
+		"name": "set_tokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "amounts",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "composition",
+		"outputs": [
+			{
+				"internalType": "uint256[10]",
+				"name": "",
+				"type": "uint256[10]"
+			},
+			{
+				"internalType": "uint256[10]",
+				"name": "",
+				"type": "uint256[10]"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -70,28 +111,5 @@
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "weights",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	}
 ]
