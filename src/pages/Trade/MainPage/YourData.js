@@ -28,9 +28,13 @@ function GridItem({ xs = 2, children }) {
 }
 
 export default function BasicGrid({ state }) {
+    console.log('yourdata')
+    
+
     const {
         avax_price, user_base, user_collateral, amm_base, amm_quote
     } = state;
+    console.log(state);
 
     const perp_price = amm_quote / amm_base;
     const portfolio_value = (avax_price * Math.abs(user_base) / peg_multiplier).toFixed(2);

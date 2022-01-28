@@ -3,11 +3,11 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount_xavax",
+				"name": "amount_xusdc",
 				"type": "uint256"
 			}
 		],
-		"name": "close_position",
+		"name": "close_long",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -16,7 +16,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount_xavax",
+				"name": "amount_xusdc",
 				"type": "uint256"
 			}
 		],
@@ -29,7 +29,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "amount_usdc",
 				"type": "uint256"
 			}
 		],
@@ -39,21 +39,14 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "initialize_user",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount_xavax",
+				"name": "amount_xusdc",
 				"type": "uint256"
 			}
 		],
-		"name": "open_position",
+		"name": "open_long",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -62,11 +55,24 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount_xavax",
+				"name": "amount_xusdc",
 				"type": "uint256"
 			}
 		],
 		"name": "open_short",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "lev",
+				"type": "uint256"
+			}
+		],
+		"name": "set_leverage",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -80,7 +86,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "amount_usdc",
 				"type": "uint256"
 			}
 		],
@@ -91,7 +97,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "get_amm_base",
+		"name": "amm_base",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -104,33 +110,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "get_amm_quote",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "get_user_base",
-		"outputs": [
-			{
-				"internalType": "int256",
-				"name": "",
-				"type": "int256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "get_user_collateral",
+		"name": "amm_quote",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -157,6 +137,71 @@
 	{
 		"inputs": [],
 		"name": "getLatestPriceTimestamp",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "leverage",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "perp_price",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "user_base",
+		"outputs": [
+			{
+				"internalType": "int256",
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "user_collateral",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "user_quote",
 		"outputs": [
 			{
 				"internalType": "uint256",

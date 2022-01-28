@@ -12,7 +12,10 @@ const Login = ({ setPage }) => {
         return (
             <div>
                 <Button
-                    onClick={() => authenticate({ signingMessage: "Hello World!" })}
+                    onClick={async () => {
+                        await authenticate({ signingMessage: "Hello World!" })
+                        setPage(1);
+                    }}
                     color='inherit'
                     startIcon={<Avatar
                         src={moralisIcon}
@@ -30,7 +33,7 @@ const Login = ({ setPage }) => {
         <div>
             <Button
                 onClick={() => {
-                    setPage('Home');
+                    setPage(0);
                     logout();
                 }}
                 color='inherit'

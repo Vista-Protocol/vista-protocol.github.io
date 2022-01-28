@@ -47,6 +47,7 @@ function a11yProps(index) {
 export default function FullWidthTabs({ state }) {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
+    console.log('labtabs')
     
     const {
         avax_price, user_base, user_collateral, amm_base, amm_quote

@@ -30,7 +30,8 @@ import logo from './static/logo.svg';
 
 import abi_avaperps from './contracts/abi_avaperps.json';
 import abi_erc20copy from './contracts/abi_erc20copy.json';
-const address_avaperps = '0xF1c79edE62cD228aE637464810CCD12C30ad1A65';
+
+const address_avaperps = '0xAe23435Ab0edcaD26A097Fd1ebD6c4E5b49392A7';
 const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 
 const drawerWidth = 240;
@@ -98,25 +99,12 @@ function ResponsiveDrawer(props) {
             <CssBaseline />
             <AppBar
                 position="fixed"
-                sx={{
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
-                    ml: { sm: `${drawerWidth}px` },
-                }}
                 style={{
                     color: 'fireBrick',
                     // backgroundColor: 'black'
                 }}
             >
                 <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: 'none' } }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
                     
                     <Box mr={2}>
                         <img src={logo} alt="logo" height="55px" />
@@ -140,44 +128,16 @@ function ResponsiveDrawer(props) {
                 </Toolbar>
             </AppBar>
             <Box
-                component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-                aria-label="mailbox folders"
-            >
-                {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-                <Drawer
-                    container={container}
-                    variant="temporary"
-                    open={mobileOpen}
-                    onClose={handleDrawerToggle}
-                    ModalProps={{
-                        keepMounted: true, // Better open performance on mobile.
-                    }}
-                    sx={{
-                        display: { xs: 'block', sm: 'none' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-                    }}
-                >
-                    {drawer}
-                </Drawer>
-                <Drawer
-                    variant="permanent"
-                    sx={{
-                        display: { xs: 'none', sm: 'block' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-                    }}
-                    open
-                >
-                    {drawer}
-                </Drawer>
-            </Box>
-            <Box
                 component="main"
                 sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
             >
                 <Toolbar />
 
-                {pages[page]}
+                <Trade
+                    contract_erc20copy={contract_erc20copy}
+                    contract_avaperps={contract_avaperps}
+                    page={page}
+                />
             </Box>
         </Box>
     );

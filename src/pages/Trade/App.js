@@ -23,17 +23,17 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const cap = 5;
 
-export default function App({ contract_avaperps, contract_erc20copy }) {
+export default function App({ contract_avaperps, contract_erc20copy, page }) {
     const { user } = useMoralis();
 
     const [state, setState] = React.useState();
 
     async function get_avax_price() {
-        if (!user) {
-            console.log('user not logged in');
-            return;
+        let from = false;
+        if (user) {
+            // console.log('user not logged in');
+            from = user.get('ethAddress');
         }
-        const from = user.get('ethAddress');
 
         if (!contract_avaperps) {
             console.log('contract not initialized');
@@ -43,14 +43,15 @@ export default function App({ contract_avaperps, contract_erc20copy }) {
         const url = 'https://api.covalenthq.com/v1/pricing/tickers/?quote-currency=USD&format=JSON&tickers=AVAX&key=ckey_a1450a78fcfc4d27aa954670c11';
 
         const promises = [
-            contract_avaperps.methods.get_amm_base().call(),
-            contract_avaperps.methods.get_amm_quote().call(),
-            contract_avaperps.methods.get_user_base().call({ from }),
-            contract_avaperps.methods.get_user_collateral().call({ from }),
+            contract_avaperps.methods.amm_base().call(),
+            contract_avaperps.methods.amm_quote().call(),
+            user ? contract_avaperps.methods.user_base().call({ from }) : 'Not logged in',
+            user ? contract_avaperps.methods.user_collateral().call({ from }) : 'Not logged in',
             axios.get(url),
         ];
 
         const values = await Promise.all(promises);
+        // console.log(values)
         let [
             amm_base, amm_quote, user_base, user_collateral, resp
         ] = values;
@@ -71,7 +72,11 @@ export default function App({ contract_avaperps, contract_erc20copy }) {
         get_avax_price();
     }, []);
 
+    console.log('trade')
+
     if (!state) {
+        get_avax_price()
+        return <div />
         return (
             <div>
                 <Loading />

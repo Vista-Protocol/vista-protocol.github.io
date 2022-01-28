@@ -44,26 +44,34 @@ contract AvaPerps is PriceConsumer {
     mapping(address => UserInfo) user; 
     // stays the same with multiple markets
 
-    function get_user_collateral() public view returns (uint) {
+    function user_collateral() public view returns (uint) {
         return user[msg.sender].collateral;
     }
 
-    function get_user_base() public view returns (int) {
+    function user_base() public view returns (int) {
         return user[msg.sender].position.base_asset_amount;
     }
 
-    function get_amm_base() public view returns (uint) {
+    function user_quote() public view returns (uint) {
+        return user[msg.sender].quote_asset_amount;
+    }
+
+    function amm_base() public view returns (uint) {
         return amm.base_asset_amount;
     }
 
-    function get_amm_quote() public view returns (uint) {
+    function amm_quote() public view returns (uint) {
         return amm.quote_asset_amount;
     }
 
-    // all information relevant to user
+    function perp_price() public view returns (uint) {
+        return amm.quote_asset_amount / amm.base_asset_amount;
+    }
+
     struct UserInfo {
         address user_address;
         uint collateral; // usdc balance
+        uint quote_asset_amount;
         MarketPosition position; // array if more than one market
     }
 
@@ -72,7 +80,6 @@ contract AvaPerps is PriceConsumer {
         int base_asset_amount; // amount of xAVAX
         // base_asset_amount is negative when shorting
 
-        uint quote_asset_notional_amount; // how much xAVAX is worth in xUSD; not sure if necessary
         int last_cum_funding; // unrealized funding
     }
 
@@ -109,12 +116,13 @@ contract AvaPerps is PriceConsumer {
     // will require some functions to withdraw money for repegging and payments to users affected by bugs 
     address insurance_account;
     uint constant peg_multiplier = 10 ** 6;
+    uint public leverage = 5;
 
     // our contract on avalanche testnet
-    // address constant USDC_CONTRACT_ADDRESS = 0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C;
+    address constant USDC_CONTRACT_ADDRESS = 0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C;
 
     // random contract on javascript vm (remix default)
-    address constant USDC_CONTRACT_ADDRESS = 0xd9145CCE52D386f254917e481eB44e9943F39138;
+    // address constant USDC_CONTRACT_ADDRESS = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
 
     ERC20Copy USDC_CONTRACT;
     Market market;
@@ -128,7 +136,7 @@ contract AvaPerps is PriceConsumer {
         amm = AMM(
             0x5498BB86BC934c8D34FDA08E81D444153d0D06aD, // not necessary
             1000 * peg_multiplier,
-            100000 * peg_multiplier,
+            1000 * peg_multiplier,
             0,
             0,
             3600, // 1 hour in seconds
@@ -137,199 +145,131 @@ contract AvaPerps is PriceConsumer {
         );
         market = Market(true, 0, 0, 0, 0, amm);
     }
-
-    // global collateral vault
-    // escrows (holds) all USDC collateral
-    // address collateral_account;
-    // CHANGE: contract itself will be escrow
-
-    // Adds new user
-    // Rewrite this function
-    function initialize_user() public {
-        MarketPosition memory position = MarketPosition(0, 0, 0);
-        UserInfo memory u = UserInfo(msg.sender, 0, position);
-        user[msg.sender] = u;
+    
+    function set_leverage(uint lev) public {
+        leverage = lev;
     }
 
-    // Adds new perpetual asset
-    // Not needed in V0
-    // Contract needs to inherit Ownable
-    // function initalize_market() public {
-    //     require(msg.sender == owner);
-
-    //     Market m = Market(true, 0, 0, 0, 0);
-    //     Markets.push(m);
-    // };
-
-    // user must approve avaperps contract address thru usdc contract
-    // https://ethereum.stackexchange.com/questions/46318/how-can-i-transfer-erc20-tokens-from-a-contract-to-an-user-account/46360
-    function deposit_collateral(uint amount) public {
-        USDC_CONTRACT.transferFrom(msg.sender, address(this), amount);
-
-        user[msg.sender].collateral += amount;
+    function deposit_collateral(uint amount_usdc) public {
+        USDC_CONTRACT.transferFrom(msg.sender, address(this), amount_usdc);
+        user[msg.sender].collateral += amount_usdc;
+        user[msg.sender].quote_asset_amount += amount_usdc * leverage;
     }
 
-    // NEED TO REWRITE
-    // contract admin sends usdt to user
-    // must be called by admin
-    // will revert if admin doesn't have enough real usdt
-    function withdraw_collateral(uint amount) public {
-        require(user[msg.sender].collateral >= amount);
+    // each xusdc is worth 1 usdc / leverage
+    function withdraw_collateral(uint amount_usdc) public {
+        require(
+            user[msg.sender].quote_asset_amount >= amount_usdc * leverage,
+            "not enough liquid usdc"
+        );
 
-        USDC_CONTRACT.transfer(msg.sender, amount);
-
-        user[msg.sender].collateral -= amount;
+        user[msg.sender].quote_asset_amount -= amount_usdc * leverage;
+        user[msg.sender].collateral -= amount_usdc;
+        USDC_CONTRACT.transfer(msg.sender, amount_usdc);
     }
 
-
-    // i don't know what direction means
-    // function open_position(bool direction, uint amount /*, 
-    //                     uint market_index, uint limit price*/) {
-    //     // Settle user funding payments
-    //     settle_funding_payment();
-
-    //     // Determine price and decrease user's
-
-    //     // 
-    //     // Making trade smaller
-    //     if (direction & user[msg.sender] < 0)
-    //     {
-    //         uint min 
-    // }
-
-
-    // beforehand, initialize Market market and AMM amm objects, with those names
-    function open_position(uint256 amount_xavax) public {
-        // modify user
+    function open_long(uint256 amount_xusdc) public {
+        // require(
+        //     user_base() >= 0,
+        //     "cannot open long while short"
+        // );
 
         uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
-        uint256 base1 = amm.base_asset_amount - amount_xavax;
-        uint256 quote1 = k / base1;
-        // QUESTION: do we store k?
-        uint256 amount_xusdc = quote1 - amm.quote_asset_amount;
+        uint256 quote1 = amm.quote_asset_amount + amount_xusdc;
+        uint256 base1 = k / quote1;
+        uint256 amount_xavax = amm.base_asset_amount - base1;
 
         // using '>' forces users to always have some collateral left
         // helpful for funding rates
         require(
-            user[msg.sender].collateral > amount_xusdc &&
-            get_user_base() >= 0
+            user_quote() > amount_xusdc,
+            "cannot afford cost"
         );
 
-        user[msg.sender].collateral -= amount_xusdc;
-        user[msg.sender].position.base_asset_amount += int(amount_xavax);
-        user[msg.sender].position.quote_asset_notional_amount += amount_xusdc;
-
-        // modify amm
-
-        amm.base_asset_amount = base1;
-        amm.quote_asset_amount = quote1;
-    
-        amm.mark_twap = amm.quote_asset_amount / amm.base_asset_amount * peg_multiplier;
-        // amm.mark_twap_ts = int(amm.mark_twap) - getLatestPrice(); // oracle price
-
-        // that function defined in chainlink's PriceConsumer contract
-    }
-	
-    function close_position(uint256 amount_xavax) public {
-        // modify user
-
-        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
-        uint256 base1 = amm.base_asset_amount + amount_xavax;
-        uint256 quote1 = k / base1;
-        // QUESTION: do we store k?
-        uint256 amount_xusdc = amm.quote_asset_amount - quote1;
-
-        require(user[msg.sender].position.base_asset_amount >= int(amount_xavax));
-
-        user[msg.sender].collateral += amount_xusdc;
-        user[msg.sender].position.base_asset_amount -= int(amount_xavax);
-        user[msg.sender].position.quote_asset_notional_amount -= amount_xusdc;
-
-        // modify amm
-
-        amm.base_asset_amount = base1;
-        amm.quote_asset_amount = quote1;
-    
-        amm.mark_twap = amm.quote_asset_amount / amm.base_asset_amount * peg_multiplier;
-        // amm.mark_twap_ts = int(amm.mark_twap) - getLatestPrice();
-        // that function defined in chainlink's PriceConsumer contract
-    }
-	
-    // beforehand, initialize Market market and AMM amm objects, with those names
-    function open_short(uint256 amount_xavax) public {
-        // modify user
-
-        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
-        uint256 base1 = amm.base_asset_amount + amount_xavax;
-        uint256 quote1 = k / base1;
-        // QUESTION: do we store k?
-        uint256 amount_xusdc = amm.quote_asset_amount - quote1;
-
-        // using '>' forces users to always have some collateral left
-        // helpful for funding rates
-        require(
-            user[msg.sender].collateral > amount_xusdc &&
-            get_user_base() <= 0
-        );
-
-        user[msg.sender].collateral -= amount_xusdc;
-        user[msg.sender].position.base_asset_amount -= int(amount_xavax);
-
-        // modify amm
-
-        amm.base_asset_amount = base1;
-        amm.quote_asset_amount += amount_xusdc;
-    
-        amm.mark_twap = amm.quote_asset_amount / amm.base_asset_amount * peg_multiplier;
-        // amm.mark_twap_ts = int(amm.mark_twap) - getLatestPrice(); // oracle price
-
-        // that function defined in chainlink's PriceConsumer contract
-    }
-	
-    function close_short(uint256 amount_xavax) public {
-        // modify user
-
-        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
-        uint256 base1 = amm.base_asset_amount - amount_xavax;
-        uint256 quote1 = k / base1;
-        // QUESTION: do we store k?
-        uint256 amount_xusdc = quote1 - amm.quote_asset_amount;
-
-        require(-user[msg.sender].position.base_asset_amount >= int(amount_xavax));
-
-        user[msg.sender].collateral += amount_xusdc;
+        user[msg.sender].quote_asset_amount -= amount_xusdc;
         user[msg.sender].position.base_asset_amount += int(amount_xavax);
 
         // modify amm
 
         amm.base_asset_amount = base1;
-        amm.quote_asset_amount -= amount_xusdc;
-    
-        amm.mark_twap = amm.quote_asset_amount / amm.base_asset_amount * peg_multiplier;
-        // amm.mark_twap_ts = int(amm.mark_twap) - getLatestPrice();
-        // that function defined in chainlink's PriceConsumer contract
+        amm.quote_asset_amount = quote1;
     }
+	
+    function close_long(uint256 amount_xusdc) public {
+        // modify user
 
-    // function check_liquidate(address seller) public {
-    //     uint256 base_asset_amount = user[seller].position.base_asset_amount;
-    //     uint256 index = user[seller].position.buys.length - 1;
-    //     uint256 total_cost;
-    //     while (base_asset_amount > user[seller].position.buys[index].amount_xavax) {
-    //         base_asset_amount -= user[seller].position.buys[index].amount_xavax;
-    //         total_cost += user[seller].position.buys[index].amount_usdc;
-    //         index--;
-    //     }
-    //     total_cost += user[seller].position.buys[index].amount_usdc * (
-    //         base_asset_amount / user[seller].position.buys[index].amount_xavax
-    //     );
-        
-    //     uint256 total_value = user[seller].position.base_asset_amount * getLatestPrice();
-    //     // right side of inequality means $10 in USDC
-    //     if (total_value - total_cost <= 10 ** 7) {
-    //         user[seller].collateral = 0; // sorry pal, taking your USDC
-    //         close_position(user[seller].position.base_asset_amount, seller);
-    //     }
-    // }
+        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
+        uint256 quote1 = amm.quote_asset_amount - amount_xusdc;
+        uint256 base1 = k / quote1;
+        uint256 amount_xavax = base1 - amm.base_asset_amount;
+
+        require(
+            user_base() >= int(amount_xavax),
+            "not enough base_asset to sell"
+        );
+
+        user[msg.sender].quote_asset_amount += amount_xusdc;
+        user[msg.sender].position.base_asset_amount -= int(amount_xavax);
+
+        // modify amm
+
+        amm.base_asset_amount = base1;
+        amm.quote_asset_amount = quote1;
+    }
+	
+    function open_short(uint256 amount_xusdc) public {
+        // require(
+        //     user_base() <= 0,
+        //     "cannot open short while long"
+        // );
+
+        require(
+            amm.quote_asset_amount > amount_xusdc,
+            "cannot make quote_asset pool go negative"
+        );
+
+        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
+        uint256 quote1 = amm.quote_asset_amount - amount_xusdc;
+        uint256 base1 = k / quote1;
+        uint256 amount_xavax = base1 - amm.base_asset_amount;
+
+        // using '>' forces users to always have some collateral left
+        // helpful for funding rates
+        require(
+            user_quote() > amount_xusdc,
+            "cannot afford cost"
+        );
+
+        user[msg.sender].quote_asset_amount -= amount_xusdc;
+        user[msg.sender].position.base_asset_amount -= int(amount_xavax);
+
+        // modify amm
+
+        amm.base_asset_amount = base1;
+        amm.quote_asset_amount = quote1;
+    }
+	
+    function close_short(uint256 amount_xusdc) public {
+        // modify user
+
+        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
+        uint256 quote1 = amm.quote_asset_amount + amount_xusdc;
+        uint256 base1 = k / quote1;
+        uint256 amount_xavax = amm.base_asset_amount - base1;
+
+        require(
+            -user_base() >= int(amount_xavax),
+            "not enough shorts to close"
+        );
+
+        user[msg.sender].quote_asset_amount += amount_xusdc;
+        user[msg.sender].position.base_asset_amount += int(amount_xavax);
+
+        // modify amm
+
+        amm.base_asset_amount = base1;
+        amm.quote_asset_amount = quote1;
+    }
 }
 
 // for index fund of top 10 avalanche tokens
