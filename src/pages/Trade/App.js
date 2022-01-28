@@ -23,7 +23,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const cap = 5;
 
-export default function App({ contract_avaperps, contract_erc20copy, page }) {
+export default function App({ contract_avaperps, contract_erc20copy, net_id, address_avaperps }) {
     const { user } = useMoralis();
 
     const [state, setState] = React.useState();
@@ -49,45 +49,47 @@ export default function App({ contract_avaperps, contract_erc20copy, page }) {
             user ? contract_avaperps.methods.user_quote().call({ from }) : 'Not logged in',
             user ? contract_avaperps.methods.user_collateral().call({ from }) : 'Not logged in',
             axios.get(url),
+            contract_erc20copy ? contract_erc20copy.methods.balanceOf(address_avaperps).call() : 'n',
         ];
 
         const values = await Promise.all(promises);
         // console.log(values)
         let [
-            amm_base, amm_quote, user_base, user_quote, user_collateral, resp
+            amm_base, amm_quote, user_base, user_quote, user_collateral, resp, tvl
         ] = values;
 
         const avax_price = resp.data.data.items[0].quote_rate;
 
         const obj = {
-            amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price
+            amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, tvl
         };
 
         setState(obj);
-        console.log(state);
-
-        return obj;
     }
 
     React.useEffect(() => {
         get_avax_price();
     }, []);
 
-    console.log('trade')
+    if (net_id !== 43113) {
+        return (
+            <Loading
+                message={`Wrong network (${net_id}). Should be Avalanche (43113).`}
+            />
+        );
+    }
 
     if (!state) {
         get_avax_price();
-        return <Loading />
-        return (
-            <div>
-                <Loading />
-            </div>
-        );
+        return <Loading />;
     }
 
     return (
         <Box
-            style={{ background: 'linear-gradient(black, fireBrick)' }}
+            style={{
+                background: 'linear-gradient(black, fireBrick)',
+                height: '100vh'
+            }}
             p={3}
         >
             <Grid
@@ -107,6 +109,7 @@ export default function App({ contract_avaperps, contract_erc20copy, page }) {
                 container
                 justifyContent="center"
                 // style={{ width: '100%' }}
+                sx={{ borderRadius: '16px' }}
             >
                 <Item>
                     <YourData

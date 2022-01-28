@@ -13,8 +13,8 @@ const Login = ({ setPage }) => {
             <div>
                 <Button
                     onClick={async () => {
-                        await authenticate({ signingMessage: "Hello World!" })
-                        setPage(1);
+                        await authenticate({ signingMessage: "Hello World!" });
+                        window.location.reload();
                     }}
                     color='inherit'
                     startIcon={<Avatar
@@ -32,9 +32,9 @@ const Login = ({ setPage }) => {
     return (
         <div>
             <Button
-                onClick={() => {
-                    setPage(0);
-                    logout();
+                onClick={async () => {
+                    await logout();
+                    window.location.reload();
                 }}
                 color='inherit'
                 startIcon={<Avatar

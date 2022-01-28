@@ -33,12 +33,13 @@ provider = 'https://api.avax-test.network/ext/bc/C/rpc'
 w3 = Web3(Web3.HTTPProvider(provider))
 w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
-contract_address = '0xdE92F3dBd6fbaAc2c11285eB8E2CBf860408e652'
+contract_address = '0x09182Ed52eC47268C054EEA06F43207726c233B4'
 with open('abi.json') as f:
     abi = json.load(f)
 
 contract = w3.eth.contract(address=contract_address, abi=abi)
-w3.eth.defaultAccount = '0xc59E499d8E789986A08547ae5294D14C5dd91D9f'
+account = '0xc59E499d8E789986A08547ae5294D14C5dd91D9f'
+w3.eth.defaultAccount = account
 
 
 def get_quotes(component_ids: list) -> dict:
@@ -65,6 +66,16 @@ def get_quotes(component_ids: list) -> dict:
     return resp['data']
 
 def main() -> int:
+    contract.functions.replace_token(1, 1).transact()
+
+    balance = contract.functions.tokens(1).send()
+    print('balance', balance)
+
+    return
+    
+    balance = contract.functions.usdt(account).call()
+    print('balance', balance)
+
     component_ids, component_weights = contract.functions.composition().call()
     print('component_ids', component_ids)
     print('component_weights', component_weights)

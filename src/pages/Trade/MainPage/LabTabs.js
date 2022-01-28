@@ -47,7 +47,6 @@ function a11yProps(index) {
 export default function LabTabs({ state, contract_avaperps }) {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
-    console.log('labtabs')
 
     const handleChange = (event, newValue) => {
         console.log(newValue)

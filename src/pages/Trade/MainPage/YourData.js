@@ -29,11 +29,10 @@ function GridItem({ xs = 2, children }) {
 
 export default function BasicGrid({ state }) {
     const {
-        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price
+        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, tvl
     } = state;
 
     const perp_price = amm_quote / amm_base;
-    console.log(perp_price, user_base, user_quote)
     const portfolio_value = (
         (
             perp_price * Math.abs(user_base) + Number(user_quote)
@@ -41,8 +40,7 @@ export default function BasicGrid({ state }) {
     ).toFixed(2);
 
     const funding_rate = (perp_price - avax_price) / avax_price / 24;
-    const apy = Math.pow(1 + funding_rate, 24 * 365).toFixed(2) - 1;
-    console.log(funding_rate, apy);
+    const apy = Math.pow(1 + funding_rate, 24 * 365) - 1;
 
     const position = `
         ${
@@ -55,7 +53,10 @@ export default function BasicGrid({ state }) {
     return (
         <Box
             m={1}
-            sx={{ flexGrow: 1 }}
+            p={1}
+            sx={{
+                flexGrow: 1,
+            }}
         >
             <Grid container spacing={2} columns={11}>
                 <GridItem
@@ -113,8 +114,6 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             </Grid>
             
-            <br />
-            
             <Grid container spacing={2} columns={11}>
                 <GridItem
                     xs={3}
@@ -163,7 +162,9 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             
                 <GridItem>
-                    {apy}% APY
+                    {
+                        apy.toFixed(2)
+                    }% APY
                     
                     <Typography
                         variant='subtitle2'
@@ -173,9 +174,6 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             </Grid>
         
-            
-            <br />
-            
             <Grid container spacing={2} columns={11}>
                 <GridItem
                     xs={3}
@@ -188,17 +186,25 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             
                 <GridItem>
-                    {amm_base / peg_multiplier} AVAX-PERP
+                    {
+                        (
+                            tvl / peg_multiplier
+                        ).toFixed(2)
+                    } USDC
                     
                     <Typography
                         variant='subtitle2'
                     >
-                        Base Asset Amount
+                        TVL
                     </Typography>
                 </GridItem>
             
                 <GridItem>
-                    {amm_quote / peg_multiplier} USDC
+                    {
+                        (
+                            amm_quote / peg_multiplier
+                        ).toFixed(2)
+                    } USDC
                     
                     <Typography
                         variant='subtitle2'
@@ -208,7 +214,25 @@ export default function BasicGrid({ state }) {
                 </GridItem>
             
                 <GridItem>
-                    {amm_quote * amm_base / peg_multiplier ** 2}
+                    {
+                        (
+                            amm_base / peg_multiplier
+                        ).toFixed(2)
+                    } AVAX-PERP
+                    
+                    <Typography
+                        variant='subtitle2'
+                    >
+                        Base Asset Amount
+                    </Typography>
+                </GridItem>
+            
+                <GridItem>
+                    {
+                        (
+                            amm_quote * amm_base / peg_multiplier ** 2
+                        ).toFixed(2)
+                    }
                     
                     <Typography
                         variant='subtitle2'

@@ -7,6 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
+import Moralis from 'moralis';
 import { useMoralis } from "react-moralis";
 import Web3 from 'web3';
 
@@ -14,6 +15,7 @@ import Trade from './pages/Trade/App';
 import DepositButton from './pages/TopBar/DepositButton';
 import Login from './pages/TopBar/Login';
 import logo from './static/logo.svg';
+import Loading from './pages/Trade/Loading';
 
 import abi_avaperps from './contracts/abi_avaperps.json';
 import abi_erc20copy from './contracts/abi_erc20copy.json';
@@ -24,16 +26,22 @@ const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 const drawerWidth = 240;
 
 function ResponsiveDrawer() {
-    const [page, setPage] = React.useState('Home');
+    const { user } = useMoralis();
     const [contract_avaperps, set_contract_avaperps] = React.useState();
     const [contract_erc20copy, set_contract_erc20copy] = React.useState();
+    const [net_id, set_net_id] = React.useState();
+    const [tvl, set_tvl] = React.useState();
 
-    React.useEffect(() => {
+    const get_net_id = async () => {
         console.log(Web3);
         if (Web3.givenProvider === null) {
             return;
         }
         const web3 = new Web3(Web3.givenProvider);
+
+        const id = await web3.eth.net.getId();
+        set_net_id(id);
+
         let resp;
 
         resp = new web3.eth.Contract(abi_avaperps, address_avaperps);
@@ -41,9 +49,19 @@ function ResponsiveDrawer() {
         
         resp = new web3.eth.Contract(abi_erc20copy, address_erc20copy);
         set_contract_erc20copy(resp);
+    }
+
+    React.useEffect(() => {
+        get_net_id();
     }, []);
 
-    console.log(page);
+    // if (net_id && net_id !== 43113) {
+    //     return (
+    //         <Loading
+    //             message={`Wrong network`}
+    //         />
+    //     );
+    // }
 
     return (
         <Box
@@ -75,9 +93,7 @@ function ResponsiveDrawer() {
                         contract_avaperps={contract_avaperps}
                     />
 
-                    <Login
-                        setPage={setPage}
-                    />
+                    <Login />
                 </Toolbar>
             </AppBar>
             <Box
@@ -89,7 +105,8 @@ function ResponsiveDrawer() {
                 <Trade
                     contract_erc20copy={contract_erc20copy}
                     contract_avaperps={contract_avaperps}
-                    page={page}
+                    net_id={net_id}
+                    address_avaperps={address_avaperps}
                 />
             </Box>
         </Box>

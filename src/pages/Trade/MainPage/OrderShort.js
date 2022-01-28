@@ -26,6 +26,8 @@ export default function OrderShort({ state, contract_avaperps, short = false }) 
 
     const perp_price = amm_quote / amm_base;
     const k = amm_quote * amm_base;
+    
+    const disabled = !user || amount <= 0 || amount * peg_multiplier > user_quote;
 
     function open_short_base_amount() {
         const quote1 = Number(amm_quote) - amount * peg_multiplier;
@@ -113,7 +115,7 @@ export default function OrderShort({ state, contract_avaperps, short = false }) 
                 <Button
                     variant='contained'
                     style={{ width: '100%' }}
-                    disabled={!user || amount <= 0}
+                    disabled={disabled}
                     onClick={async () => {
                         const from = user.get('ethAddress');
                         await contract_avaperps.methods.open_short(
@@ -129,7 +131,7 @@ export default function OrderShort({ state, contract_avaperps, short = false }) 
                 <Button
                     variant='contained'
                     style={{ width: '100%' }}
-                    disabled={!user || amount <= 0}
+                    disabled={disabled}
                     onClick={async () => {
                         const from = user.get('ethAddress');
                         await contract_avaperps.methods.close_short(
