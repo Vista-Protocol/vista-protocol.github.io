@@ -76,8 +76,8 @@ export default function App({ contract_avaperps, contract_erc20copy, page }) {
     console.log('trade')
 
     if (!state) {
-        get_avax_price()
-        return <div />
+        get_avax_price();
+        return <Loading />
         return (
             <div>
                 <Loading />
@@ -86,7 +86,10 @@ export default function App({ contract_avaperps, contract_erc20copy, page }) {
     }
 
     return (
-        <Box>
+        <Box
+            style={{ background: 'linear-gradient(black, fireBrick)' }}
+            p={3}
+        >
             <Grid
                 container
                 justifyContent="center"

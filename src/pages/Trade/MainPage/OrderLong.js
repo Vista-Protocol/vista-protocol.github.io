@@ -113,7 +113,7 @@ export default function OrderLong({ state, contract_avaperps, short = false }) {
                 <Button
                     variant='contained'
                     style={{ width: '100%' }}
-                    disabled={!user}
+                    disabled={!user || amount <= 0}
                     onClick={async () => {
                         const from = user.get('ethAddress');
                         await contract_avaperps.methods.open_long(
@@ -129,6 +129,7 @@ export default function OrderLong({ state, contract_avaperps, short = false }) {
                 <Button
                     variant='contained'
                     style={{ width: '100%' }}
+                    disabled={!user || amount <= 0}
                     onClick={async () => {
                         const from = user.get('ethAddress');
                         await contract_avaperps.methods.close_long(

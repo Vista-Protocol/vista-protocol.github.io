@@ -54,7 +54,7 @@ export default function BasicGrid({ state }) {
 
     return (
         <Box
-            m={3}
+            m={1}
             sx={{ flexGrow: 1 }}
         >
             <Grid container spacing={2} columns={11}>
