@@ -35,8 +35,9 @@ provider = 'https://speedy-nodes-nyc.moralis.io/ca66f16031f65e247cfa902a/avalanc
 w3 = Web3(Web3.HTTPProvider(provider))
 w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
-contract_address = '0xA87B55f6F7F4EBe0602A725622c9376b9b4FDA37'
-with open('abi.json') as f:
+with open('../src/contracts/address_avaindex.txt') as f:
+    contract_address = f.read()
+with open('../src/contracts/abi_avaindex.json') as f:
     abi = json.load(f)
 
 contract = w3.eth.contract(address=contract_address, abi=abi)
@@ -83,7 +84,7 @@ def main() -> int:
     print('component_ids', component_ids)
     print('component_amounts', component_amounts)
 
-    component_ids = [1975, 2539, 4056, 5631, 5805, 5821, 5829, 5892, 6758, 6951]
+    # component_ids = [1975, 2539, 4056, 5631, 5805, 5821, 5829, 5892, 6758, 6951]
     # component_amounts = [4649, 243088, 97247, 21144, 1225, 136061, 82415, 4308, 16866, 7853076]
 
     quotes = get_quotes(component_ids)
@@ -119,7 +120,30 @@ def main() -> int:
         )
         print('txn_hash', txn_hash)
 
-main()
+    return index_price
 
-def call(event, context):
-    main()
+# main()
+
+def cors_enabled_function(request):
+    # For more information about CORS and CORS preflight requests, see:
+    # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
+
+    # Set CORS headers for the preflight request
+    if request.method == 'OPTIONS':
+        # Allows GET requests from any origin with the Content-Type
+        # header and caches preflight response for an 3600s
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+
+        return ('', 204, headers)
+
+    # Set CORS headers for the main request
+    headers = {
+        'Access-Control-Allow-Origin': '*'
+    }
+
+    return main()
