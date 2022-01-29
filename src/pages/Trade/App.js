@@ -23,7 +23,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const cap = 5;
 
-export default function App({ contract_avaperps, contract_erc20copy, net_id, address_avaperps }) {
+export default function App({ contract_avaperps, contract_erc20copy, net_id, address_avaperps, children }) {
     const { user } = useMoralis();
 
     const [state, setState] = React.useState();
@@ -100,7 +100,9 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
                     <LabTabs
                         state={state}
                         contract_avaperps={contract_avaperps}
-                    />
+                    >
+                        {children}
+                    </LabTabs>
                 </Item>
             </Grid>
             <br />

@@ -6,6 +6,9 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 
+import ShortButtons from './ShortButtons';
+import LongButtons from './LongButtons';
+
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -16,7 +19,7 @@ const Item = styled(Paper)(({ theme }) => ({
 const cap = 5;
 const peg_multiplier = 10 ** 6;
 
-export default function OrderLong({ state, contract_avaperps, short = false }) {
+export default function OrderShort({ state, contract_avaperps, value, children }) {
     const [amount, setAmount] = React.useState(0);
     const { user } = useMoralis();
 
@@ -26,11 +29,25 @@ export default function OrderLong({ state, contract_avaperps, short = false }) {
 
     const perp_price = amm_quote / amm_base;
     const k = amm_quote * amm_base;
-
+    
     const disabled = !user || amount <= 0 || amount * peg_multiplier > user_quote;
 
-    function open_long_base_amount() {
-        const quote1 = Number(amm_quote) + amount * peg_multiplier;
+    const buttons = value ? (
+        <ShortButtons
+            amount={amount}
+            contract_avaperps={contract_avaperps}
+            state={state}
+        />
+    ) : (
+        <LongButtons
+            amount={amount}
+            contract_avaperps={contract_avaperps}
+            state={state}
+        />
+    );
+
+    function open_short_base_amount() {
+        const quote1 = Number(amm_quote) - amount * peg_multiplier;
         const base1 = k / quote1;
         const base = amm_base - base1;
         return Math.abs(
@@ -38,8 +55,8 @@ export default function OrderLong({ state, contract_avaperps, short = false }) {
         ).toFixed(2);
     }
 
-    function close_long_base_amount() {
-        const quote1 = Number(amm_quote) - amount * peg_multiplier;
+    function close_short_base_amount() {
+        const quote1 = Number(amm_quote) + amount * peg_multiplier;
         const base1 = k / quote1;
         const base = amm_base - base1;
         return Math.abs(
@@ -88,7 +105,7 @@ export default function OrderLong({ state, contract_avaperps, short = false }) {
 
             <Grid item xs={6}>
                 <Item>
-                    AVAX-PERP
+                    {children}
                 </Item>
 
                 <Typography
@@ -102,46 +119,10 @@ export default function OrderLong({ state, contract_avaperps, short = false }) {
                 </Typography>
             </Grid>
 
-            <Grid item xs={12}>
-                <Typography
-                    variant='body2'
-                    style={{ textAlign: 'left' }}
-                >
-                    1 AVAX-PERP = {perp_price.toFixed(2)} USDC
-                </Typography>
-            </Grid>
+            <Box mt={2}>
+                {buttons}
+            </Box>
 
-            <Grid item xs={6}>
-                <Button
-                    variant='contained'
-                    style={{ width: '100%' }}
-                    disabled={disabled}
-                    onClick={async () => {
-                        const from = user.get('ethAddress');
-                        await contract_avaperps.methods.open_long(
-                            amount * peg_multiplier
-                        ).send({ from });
-                    }}
-                >
-                    Open Long: {open_long_base_amount()} AVAX-PERP
-                </Button>
-            </Grid>
-
-            <Grid item xs={6}>
-                <Button
-                    variant='contained'
-                    style={{ width: '100%' }}
-                    disabled={disabled}
-                    onClick={async () => {
-                        const from = user.get('ethAddress');
-                        await contract_avaperps.methods.close_long(
-                            amount * peg_multiplier
-                        ).send({ from });
-                    }}
-                >
-                    Close Long: {close_long_base_amount()} AVAX-PERP
-                </Button>
-            </Grid>
         </Grid>
     );
 }

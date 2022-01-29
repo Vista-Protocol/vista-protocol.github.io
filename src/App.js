@@ -15,11 +15,13 @@ import Trade from './pages/Trade/App';
 import DepositButton from './pages/TopBar/DepositButton';
 import Login from './pages/TopBar/Login';
 import logo from './static/logo.svg';
-import Loading from './pages/Trade/Loading';
+import SelectPerp from './SelectPerp';
 
 import abi_avaperps from './contracts/abi_avaperps.json';
+import abi_avaindex from './contracts/abi_avaindex.json';
 import abi_erc20copy from './contracts/abi_erc20copy.json';
 
+const address_avaindex = '0x92E8D075eadB70323269b4aB45eFE5956b8d01B9';
 const address_avaperps = '0xAe23435Ab0edcaD26A097Fd1ebD6c4E5b49392A7';
 const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 
@@ -30,7 +32,7 @@ function ResponsiveDrawer() {
     const [contract_avaperps, set_contract_avaperps] = React.useState();
     const [contract_erc20copy, set_contract_erc20copy] = React.useState();
     const [net_id, set_net_id] = React.useState();
-    const [tvl, set_tvl] = React.useState();
+    const [perp, set_perp] = React.useState(1);
 
     const get_net_id = async () => {
         console.log(Web3);
@@ -44,7 +46,8 @@ function ResponsiveDrawer() {
 
         let resp;
 
-        resp = new web3.eth.Contract(abi_avaperps, address_avaperps);
+        resp = perp ? new web3.eth.Contract(abi_avaindex, address_avaindex)
+            : new web3.eth.Contract(abi_avaperps, address_avaperps);
         set_contract_avaperps(resp);
         
         resp = new web3.eth.Contract(abi_erc20copy, address_erc20copy);
@@ -55,13 +58,12 @@ function ResponsiveDrawer() {
         get_net_id();
     }, []);
 
-    // if (net_id && net_id !== 43113) {
-    //     return (
-    //         <Loading
-    //             message={`Wrong network`}
-    //         />
-    //     );
-    // }
+    const children = (
+        <SelectPerp
+            perp={perp}
+            set_perp={set_perp}
+        />
+    );
 
     return (
         <Box
@@ -107,7 +109,12 @@ function ResponsiveDrawer() {
                     contract_avaperps={contract_avaperps}
                     net_id={net_id}
                     address_avaperps={address_avaperps}
-                />
+                >
+                    <SelectPerp
+                        perp={perp}
+                        set_perp={set_perp}
+                    />
+                </Trade>
             </Box>
         </Box>
     );

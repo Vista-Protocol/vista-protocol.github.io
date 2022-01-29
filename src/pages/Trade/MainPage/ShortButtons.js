@@ -16,8 +16,7 @@ const Item = styled(Paper)(({ theme }) => ({
 const cap = 5;
 const peg_multiplier = 10 ** 6;
 
-export default function OrderShort({ state, contract_avaperps, short = false }) {
-    const [amount, setAmount] = React.useState(0);
+export default function OrderShort({ state, contract_avaperps, amount }) {
     const { user } = useMoralis();
 
     const {
@@ -49,68 +48,6 @@ export default function OrderShort({ state, contract_avaperps, short = false }) 
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={6}>
-                <TextField
-                    type='number'
-                    variant='standard'
-                    inputProps={{ style: { fontSize: 30 } }}
-
-                    value={amount}
-                    onChange={event => setAmount(event.target.value)}
-                />
-            </Grid>
-
-            <Grid item xs={6}>
-                <Item>
-                    USDC
-                </Item>
-
-                <Typography
-                    variant='body2'
-                >
-                    Borrowing Power: {
-                        (user_quote / peg_multiplier).toFixed(2)
-                    }
-                </Typography>
-            </Grid>
-            
-            <Grid item xs={6}>
-                <Typography
-                    variant='h4'
-                >
-                    {
-                        (
-                            amount / perp_price
-                        ).toFixed(2)
-                    } (EST.)
-                </Typography>
-            </Grid>
-
-            <Grid item xs={6}>
-                <Item>
-                    AVAX-PERP
-                </Item>
-
-                <Typography
-                    variant='body2'
-                >
-                    Max Size: {
-                        (
-                            user_quote / perp_price / peg_multiplier
-                        ).toFixed(2)
-                    }
-                </Typography>
-            </Grid>
-
-            <Grid item xs={12}>
-                <Typography
-                    variant='body2'
-                    style={{ textAlign: 'left' }}
-                >
-                    1 AVAX-PERP = {perp_price.toFixed(2)} USDC
-                </Typography>
-            </Grid>
-
             <Grid item xs={6}>
                 <Button
                     variant='contained'

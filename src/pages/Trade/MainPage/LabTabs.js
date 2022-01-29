@@ -8,34 +8,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-import OrderLong from './OrderLong';
-import OrderShort from './OrderShort';
-
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`full-width-tabpanel-${index}`}
-            aria-labelledby={`full-width-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
-        </div>
-    );
-}
-
-TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.number.isRequired,
-    value: PropTypes.number.isRequired,
-};
+import Order from './Order';
 
 function a11yProps(index) {
     return {
@@ -44,9 +17,29 @@ function a11yProps(index) {
     };
 }
 
-export default function LabTabs({ state, contract_avaperps }) {
+export default function LabTabs({ state, contract_avaperps, children }) {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
+
+    function TabPanel(props) {
+        const { children, value, index, ...other } = props;
+    
+        return (
+            <div
+                role="tabpanel"
+                hidden={value !== index}
+                id={`full-width-tabpanel-${index}`}
+                aria-labelledby={`full-width-tab-${index}`}
+                {...other}
+            >
+                {value === index && (
+                    <Box sx={{ p: 3 }}>
+                        <Typography>{children}</Typography>
+                    </Box>
+                )}
+            </div>
+        );
+    }
 
     const handleChange = (event, newValue) => {
         console.log(newValue)
@@ -79,16 +72,22 @@ export default function LabTabs({ state, contract_avaperps }) {
                 onChangeIndex={handleChangeIndex}
             >
                 <TabPanel value={value} index={0} dir={theme.direction}>
-                    <OrderLong
+                    <Order
                         contract_avaperps={contract_avaperps}
                         state={state}
-                    />
+                        value={value}
+                    >
+                        {children}                        
+                    </Order>
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                    <OrderShort
+                    <Order
                         contract_avaperps={contract_avaperps}
                         state={state}
-                    />
+                        value={value}
+                    >
+                        {children}
+                    </Order>
                 </TabPanel>
             </SwipeableViews>
         </Box>
