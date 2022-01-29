@@ -20,7 +20,7 @@ export default function OrderLong({ state, contract_avaperps, amount }) {
     const { user } = useMoralis();
 
     const {
-        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price
+        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, perp_name
     } = state;
 
     const perp_price = amm_quote / amm_base;
@@ -60,7 +60,7 @@ export default function OrderLong({ state, contract_avaperps, amount }) {
                         ).send({ from });
                     }}
                 >
-                    Open Long: {open_long_base_amount()} AVAX-PERP
+                    Open Long: {open_long_base_amount()} {perp_name}-PERP
                 </Button>
             </Grid>
 
@@ -76,7 +76,7 @@ export default function OrderLong({ state, contract_avaperps, amount }) {
                         ).send({ from });
                     }}
                 >
-                    Close Long: {close_long_base_amount()} AVAX-PERP
+                    Close Long: {close_long_base_amount()} {perp_name}-PERP
                 </Button>
             </Grid>
         </Grid>

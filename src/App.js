@@ -27,12 +27,12 @@ const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 
 const drawerWidth = 240;
 
-function ResponsiveDrawer() {
+export default function ResponsiveDrawer() {
     const { user } = useMoralis();
     const [contract_avaperps, set_contract_avaperps] = React.useState();
     const [contract_erc20copy, set_contract_erc20copy] = React.useState();
     const [net_id, set_net_id] = React.useState();
-    const [perp, set_perp] = React.useState(1);
+    const [perp, set_perp] = React.useState(0);
 
     const get_net_id = async () => {
         console.log(Web3);
@@ -40,11 +40,10 @@ function ResponsiveDrawer() {
             return;
         }
         const web3 = new Web3(Web3.givenProvider);
-
-        const id = await web3.eth.net.getId();
-        set_net_id(id);
-
         let resp;
+
+        resp = await web3.eth.net.getId();
+        set_net_id(resp);
 
         resp = perp ? new web3.eth.Contract(abi_avaindex, address_avaindex)
             : new web3.eth.Contract(abi_avaperps, address_avaperps);
@@ -56,14 +55,10 @@ function ResponsiveDrawer() {
 
     React.useEffect(() => {
         get_net_id();
-    }, []);
+    }, [perp]);
 
-    const children = (
-        <SelectPerp
-            perp={perp}
-            set_perp={set_perp}
-        />
-    );
+    const perps = 'avaten avax'.toUpperCase().split(' ');
+    const perp_name = perps[perp];
 
     return (
         <Box
@@ -108,10 +103,12 @@ function ResponsiveDrawer() {
                     contract_erc20copy={contract_erc20copy}
                     contract_avaperps={contract_avaperps}
                     net_id={net_id}
+                    perp_name={perp_name}
                     address_avaperps={address_avaperps}
                 >
                     <SelectPerp
                         perp={perp}
+                        perps={perps}
                         set_perp={set_perp}
                     />
                 </Trade>
@@ -119,5 +116,3 @@ function ResponsiveDrawer() {
         </Box>
     );
 }
-
-export default ResponsiveDrawer;

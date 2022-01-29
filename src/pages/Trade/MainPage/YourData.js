@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import { Typography, Stack } from '@mui/material';
+import { Typography, Divider } from '@mui/material';
 
 import TimeComponent from './TimeComponent';
 
@@ -29,8 +29,9 @@ function GridItem({ xs = 2, children }) {
 
 export default function BasicGrid({ state }) {
     const {
-        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, tvl
+        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, tvl, perp_name
     } = state;
+    console.log(perp_name)
 
     const perp_price = amm_quote / amm_base;
     const portfolio_value = (
@@ -47,17 +48,17 @@ export default function BasicGrid({ state }) {
             (Math.abs(user_base) / peg_multiplier).toFixed(2)
         }
         ${user_base < 0 ? 'SHORT' : 'LONG'}
-        AVAX-PERP
+        ${perp_name}-PERP
     `;
 
     return (
         <Box
-            m={1}
-            p={1}
             sx={{
-                flexGrow: 1,
+                // flexGrow: 1,
+                width: '100%'
             }}
         >
+
             <Grid container spacing={2} columns={11}>
                 <GridItem
                     xs={3}
@@ -71,6 +72,8 @@ export default function BasicGrid({ state }) {
             
                 <GridItem>
                     {position}
+
+                    <Divider sx={{ borderBottomWidth: 2 }} />
                     
                     <Typography
                         variant='subtitle2'
@@ -84,6 +87,8 @@ export default function BasicGrid({ state }) {
                         (user_quote / peg_multiplier / cap).toFixed(2)
                     } USDC
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
@@ -96,6 +101,8 @@ export default function BasicGrid({ state }) {
                         portfolio_value
                     } USDC
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
@@ -106,15 +113,15 @@ export default function BasicGrid({ state }) {
                 <GridItem>
                     0 USDC
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
-                        AVAX Liquidation Price
+                        Liquidation Price
                     </Typography>
                 </GridItem>
-            </Grid>
             
-            <Grid container spacing={2} columns={11}>
                 <GridItem
                     xs={3}
                 >
@@ -130,10 +137,12 @@ export default function BasicGrid({ state }) {
                         perp_price.toFixed(2)
                     } USDC
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
-                        AVAX-PERP Price
+                        {perp_name}-PERP Price
                     </Typography>
                 </GridItem>
             
@@ -142,10 +151,12 @@ export default function BasicGrid({ state }) {
                         avax_price.toFixed(2)
                     } USDC
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
-                        AVAX Price
+                        {perp_name} Price
                     </Typography>
                 </GridItem>
             
@@ -153,6 +164,8 @@ export default function BasicGrid({ state }) {
                     {
                         (funding_rate * 100).toFixed(2)
                     }% in <TimeComponent />
+                    
+                    <Divider sx={{ borderBottomWidth: 2 }} />
                     
                     <Typography
                         variant='subtitle2'
@@ -166,15 +179,15 @@ export default function BasicGrid({ state }) {
                         apy.toFixed(2)
                     }% APY
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
                         24h Avg Funding
                     </Typography>
                 </GridItem>
-            </Grid>
         
-            <Grid container spacing={2} columns={11}>
                 <GridItem
                     xs={3}
                 >
@@ -192,6 +205,8 @@ export default function BasicGrid({ state }) {
                         ).toFixed(2)
                     } USDC
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
@@ -206,6 +221,8 @@ export default function BasicGrid({ state }) {
                         ).toFixed(2)
                     } USDC
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
@@ -218,7 +235,9 @@ export default function BasicGrid({ state }) {
                         (
                             amm_base / peg_multiplier
                         ).toFixed(2)
-                    } AVAX-PERP
+                    } {perp_name}-PERP
+                    
+                    <Divider sx={{ borderBottomWidth: 2 }} />
                     
                     <Typography
                         variant='subtitle2'
@@ -234,6 +253,8 @@ export default function BasicGrid({ state }) {
                         ).toFixed(2)
                     }
                     
+                    <Divider sx={{ borderBottomWidth: 2 }} />
+                    
                     <Typography
                         variant='subtitle2'
                     >
@@ -243,5 +264,6 @@ export default function BasicGrid({ state }) {
             </Grid>
         
         </Box>
+        
     );
 }

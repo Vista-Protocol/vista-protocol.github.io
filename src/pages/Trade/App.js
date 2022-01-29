@@ -23,7 +23,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const cap = 5;
 
-export default function App({ contract_avaperps, contract_erc20copy, net_id, address_avaperps, children }) {
+export default function App({ contract_avaperps, contract_erc20copy, net_id, address_avaperps, children, perp_name }) {
     const { user } = useMoralis();
 
     const [state, setState] = React.useState();
@@ -61,7 +61,7 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
         const avax_price = resp.data.data.items[0].quote_rate;
 
         const obj = {
-            amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, tvl
+            amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, tvl, perp_name
         };
 
         setState(obj);
@@ -69,7 +69,7 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
 
     React.useEffect(() => {
         get_avax_price();
-    }, []);
+    }, [perp_name, user]);
 
     if (net_id !== 43113) {
         return (
