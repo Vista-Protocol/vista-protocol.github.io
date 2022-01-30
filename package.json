@@ -1,7 +1,8 @@
 {
-  "name": "moralis-react-blank-boilerplate",
+  "name": "avaperps",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://vista-protocol.github.io",
   "dependencies": {
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
@@ -14,6 +15,7 @@
     "@walletconnect/web3-provider": "^1.6.6",
     "axios": "^0.25.0",
     "coinmarketcap-api": "^3.1.1",
+    "gh-pages": "^3.2.3",
     "moralis": "^0.0.90",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -24,6 +26,8 @@
     "web3": "^1.7.0"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "PORT=8080 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

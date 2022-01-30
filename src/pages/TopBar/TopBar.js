@@ -12,6 +12,7 @@ import { useMoralis } from "react-moralis";
 import Web3 from 'web3';
 
 import DepositButton from './DepositButton';
+import FaucetButton from './FaucetButton';
 import Login from './Login';
 import logo from '../../static/logo.svg';
 
@@ -34,8 +35,13 @@ export default function TopBar({ contract_avaperps, contract_erc20copy }) {
                     variant="h4" noWrap component="div"
                     sx={{ flexGrow: 1 }}
                 >
-                    Yin Finance
+                    Vista Protocol
                 </Typography>
+
+                <FaucetButton
+                    contract_erc20copy={contract_erc20copy}
+                    contract_avaperps={contract_avaperps}
+                />
 
                 <DepositButton
                     contract_erc20copy={contract_erc20copy}

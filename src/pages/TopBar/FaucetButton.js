@@ -16,14 +16,13 @@ const address_avaperps = '0xF1c79edE62cD228aE637464810CCD12C30ad1A65';
 const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 
 const peg_multiplier = 10 ** 8;
-const usdcLogo = 'https://icons-for-free.com/iconfiles/png/512/cryptocurrency+icons+++color+usdc-1324449146826221536.png';
+const usdcLogo = 'https://cdn-icons-png.flaticon.com/512/590/590415.png';
 
 export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
     const { user } = useMoralis();
 
     const [open, setOpen] = React.useState(false);
     const [amount, setAmount] = React.useState(0);
-    const [available, setAvailable] = React.useState(0);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -38,32 +37,9 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
         from = user.get('ethAddress');
     }
 
-    const getAvailable = async () => {
-        const resp = await contract_erc20copy.methods.balanceOf(from).call();
-        setAvailable(
-            (resp / peg_multiplier).toFixed(2)
-        );
-    } 
-
-    React.useEffect(() => {
-        getAvailable();
-    }, []);
-
-    async function deposit_collateral() {
-        await contract_erc20copy.methods.approve(
-            address_avaperps, amount * peg_multiplier
-        ).send({ from });
-
-        await contract_avaperps.methods.deposit_collateral(
-            amount * peg_multiplier
-        ).send({ from });
-
-        handleClose();
-    }
-
-    async function withdraw_collateral() {
-        await contract_avaperps.methods.withdraw_collateral(
-            amount * peg_multiplier
+    async function mint() {
+        await contract_erc20copy.methods.mint(
+            1000 * peg_multiplier
         ).send({ from });
 
         handleClose();
@@ -80,12 +56,12 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
                 />}
                 disabled={!user}
             >
-                Transfer
+                Use Faucet
             </Button>
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle sx={{ m: 0, p: 2 }}>
-                    Transfer
+                    Use Faucet
                     
                     <IconButton
                         aria-label="close"
@@ -103,34 +79,16 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
 
                 <DialogContent>
                     <DialogContentText>
-                        Transfer USDC to and from this trading platform. {available} available.
+                        USDC Faucet on Avalanche Fuji Testnet
                     </DialogContentText>
-
-                    <TextField
-                        margin="dense"
-                        label="Amount (USDC)"
-                        fullWidth
-                        variant="standard"
-                        type='number'
-
-                        value={amount}
-                        onChange={event => setAmount(event.target.value)}
-                    />
                 </DialogContent>
 
                 <DialogActions>
                     <Button
                         variant='contained'
-                        onClick={deposit_collateral}
+                        onClick={mint}
                     >
-                        Deposit
-                    </Button>
-                    <Button
-                        onClick={withdraw_collateral}
-                        variant='contained'
-                        color='error'
-                    >
-                        Withdraw
+                        Request 1000 USDC
                     </Button>
                 </DialogActions>
             </Dialog>

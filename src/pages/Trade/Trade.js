@@ -10,8 +10,8 @@ import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 
 // import TopBar from './TopBar/TopBar.js'
 
-import LabTabs from './MainPage/LabTabs.js';
-import YourData from './MainPage/YourData.js';
+import LabTabs from './Order/LabTabs.js';
+import YourData from './YourData/YourData.js';
 import Loading from './Loading';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -43,9 +43,9 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
 
         const promises = [
             contract_avaperps.methods.amms(perp).call(),
-            user ? contract_avaperps.methods.user_base(perp).call({ from }) : 'Not logged in',
-            user ? contract_avaperps.methods.user_quote().call({ from }) : 'Not logged in',
-            user ? contract_avaperps.methods.user_collateral().call({ from }) : 'Not logged in',
+            from ? contract_avaperps.methods.user_base(perp).call({ from }) : 'Not logged in',
+            from ? contract_avaperps.methods.user_quote().call({ from }) : 'Not logged in',
+            from ? contract_avaperps.methods.user_collateral().call({ from }) : 'Not logged in',
             contract_avaperps.methods.oracle_price(perp).call(),
             contract_erc20copy.methods.balanceOf(address_avaperps).call(),
         ];

@@ -79,6 +79,20 @@ export default function BasicGrid({ state }) {
                 
                     <GridItem>
                         {
+                            (Math.abs(user_base) * mark_price / peg_multiplier).toFixed(2)
+                        } USDC
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            Position Notional Value
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
                             (user_quote / peg_multiplier / cap).toFixed(2)
                         } USDC
                         
@@ -88,20 +102,6 @@ export default function BasicGrid({ state }) {
                             variant='subtitle2'
                         >
                             Liquid Capital
-                        </Typography>
-                    </GridItem>
-                
-                    <GridItem>
-                        {
-                            portfolio_value
-                        } USDC
-                        
-                        <Divider sx={{ borderBottomWidth: 2 }} />
-                        
-                        <Typography
-                            variant='subtitle2'
-                        >
-                            Portfolio Value
                         </Typography>
                     </GridItem>
                 

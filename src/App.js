@@ -12,9 +12,8 @@ import { useMoralis } from "react-moralis";
 import Web3 from 'web3';
 
 import Trade from './pages/Trade/Trade';
-import DepositButton from './pages/TopBar/DepositButton';
+import Faucet from './pages/Faucet/Faucet';
 import TopBar from './pages/TopBar/TopBar';
-import logo from './static/logo.svg';
 import SelectPerp from './SelectPerp';
 
 import abi_avaperps from './contracts/abi_avaperps.json';
@@ -23,7 +22,7 @@ import abi_erc20copy from './contracts/abi_erc20copy.json';
 const address_avaperps = '0x351Cee25E38FF6b8b9BF1044658e71847C518d1f';
 const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 
-const drawerWidth = 240;
+const drawerWidth = 0;
 
 export default function ResponsiveDrawer() {
     const { user } = useMoralis();
@@ -31,9 +30,9 @@ export default function ResponsiveDrawer() {
     const [contract_erc20copy, set_contract_erc20copy] = React.useState();
     const [net_id, set_net_id] = React.useState();
     const [perp, set_perp] = React.useState(0);
+    const [page, set_page] = React.useState('faucet');
 
     const get_net_id = async () => {
-        console.log(Web3);
         if (Web3.givenProvider === null) {
             return;
         }
@@ -57,6 +56,29 @@ export default function ResponsiveDrawer() {
     const perps = 'avax btc eth link'.toUpperCase().split(' ');
     const perp_name = perps[perp];
 
+    const trade = (
+        <Trade
+            contract_erc20copy={contract_erc20copy}
+            contract_avaperps={contract_avaperps}
+            net_id={net_id}
+            perp_name={perp_name}
+            perp={perp}
+            address_avaperps={address_avaperps}
+        >
+            <SelectPerp
+                perp={perp}
+                perps={perps}
+                set_perp={set_perp}
+            />
+        </Trade>
+    );
+    const faucet = (
+        <Faucet
+            contract_erc20copy={contract_erc20copy}
+        />
+    );
+    const pages = { trade, faucet }
+
     return (
         <Box
             sx={{ display: 'flex' }}
@@ -66,16 +88,15 @@ export default function ResponsiveDrawer() {
             }}
         >
             <CssBaseline />
-                <TopBar
-                    contract_erc20copy={contract_erc20copy}
-                    contract_avaperps={contract_avaperps}
-                />
-            <Box
-                component="main"
-                sx={{ flexGrow: 1, p: 0, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
-            >
-                <Toolbar />
+            <TopBar
+                contract_erc20copy={contract_erc20copy}
+                contract_avaperps={contract_avaperps}
+                pages={pages}
+                set_page={set_page}
+            />
 
+            <Box m={9}>
+                
                 <Trade
                     contract_erc20copy={contract_erc20copy}
                     contract_avaperps={contract_avaperps}
@@ -90,6 +111,7 @@ export default function ResponsiveDrawer() {
                         set_perp={set_perp}
                     />
                 </Trade>
+
             </Box>
         </Box>
     );
