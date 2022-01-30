@@ -17,21 +17,17 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const cap = 5;
-const peg_multiplier = 10 ** 6;
 
 export default function OrderShort({ state, contract_avaperps, value, children }) {
     const [amount, setAmount] = React.useState(0);
     const { user } = useMoralis();
 
     const {
-        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price
+        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, peg_multiplier
     } = state;
 
-    const perp_price = amm_quote / amm_base;
-    const k = amm_quote * amm_base;
+    const mark_price = amm_quote / amm_base;
     
-    const disabled = !user || amount <= 0 || amount * peg_multiplier > user_quote;
-
     const buttons = value ? (
         <ShortButtons
             amount={amount}
@@ -45,24 +41,6 @@ export default function OrderShort({ state, contract_avaperps, value, children }
             state={state}
         />
     );
-
-    function open_short_base_amount() {
-        const quote1 = Number(amm_quote) - amount * peg_multiplier;
-        const base1 = k / quote1;
-        const base = amm_base - base1;
-        return Math.abs(
-            base / peg_multiplier
-        ).toFixed(2);
-    }
-
-    function close_short_base_amount() {
-        const quote1 = Number(amm_quote) + amount * peg_multiplier;
-        const base1 = k / quote1;
-        const base = amm_base - base1;
-        return Math.abs(
-            base / peg_multiplier
-        ).toFixed(2);
-    }
 
     return (
         <Grid container spacing={2}>
@@ -97,7 +75,7 @@ export default function OrderShort({ state, contract_avaperps, value, children }
                 >
                     {
                         (
-                            amount / perp_price
+                            amount / mark_price
                         ).toFixed(2)
                     } (EST.)
                 </Typography>
@@ -113,7 +91,7 @@ export default function OrderShort({ state, contract_avaperps, value, children }
                 >
                     Max Size: {
                         (
-                            user_quote / perp_price / peg_multiplier
+                            user_quote / mark_price / peg_multiplier
                         ).toFixed(2)
                     }
                 </Typography>

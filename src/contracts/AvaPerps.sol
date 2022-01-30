@@ -26,6 +26,13 @@ contract PriceConsumer {
     function getLatestPrice() public view returns (int256) {
         return priceFeed.latestAnswer();
     }
+  
+    /**
+     * Returns the latest price
+     */
+    function getLatestPrice(address oracle) public view returns (int256) {
+        return AggregatorInterface(oracle).latestAnswer();
+    }
 
     /**
      * Returns the timestamp of the latest price update
@@ -39,7 +46,7 @@ contract PriceConsumer {
 // in the real version, we'll do something like this:
 // IERC20 USDC_CONTRACT = IERC20(USDT_CONTRACT_ADDRESS);
 // and call USDC_CONTRACT.transfer(address, uint256), etc.
-contract AvaPerps is PriceConsumer {
+contract AvaPerps {
     // user collateral + positions information
     mapping(address => UserInfo) user; 
     // stays the same with multiple markets
@@ -54,18 +61,6 @@ contract AvaPerps is PriceConsumer {
 
     function user_quote() public view returns (uint) {
         return user[msg.sender].quote_asset_amount;
-    }
-
-    function amm_base() public view returns (uint) {
-        return amm.base_asset_amount;
-    }
-
-    function amm_quote() public view returns (uint) {
-        return amm.quote_asset_amount;
-    }
-
-    function perp_price() public view returns (uint) {
-        return amm.quote_asset_amount / amm.base_asset_amount;
     }
 
     struct UserInfo {
@@ -100,7 +95,6 @@ contract AvaPerps is PriceConsumer {
     // need to do more research on peg_multiplier
     struct AMM {
         address oracle; // Chainlink address to get price feeds from
-        // above not necessary, we harcode in PriceConsumer contract
 
         uint base_asset_amount; // amount of xAVAX in vAMM
         uint quote_asset_amount; // amount of xUSD in vAMM; same value of base_asset_amount
@@ -115,8 +109,8 @@ contract AvaPerps is PriceConsumer {
     // controlled by admin at first, later by DAO
     // will require some functions to withdraw money for repegging and payments to users affected by bugs 
     address insurance_account;
-    uint constant peg_multiplier = 10 ** 6;
-    uint public leverage = 5;
+    uint constant peg_multiplier = 10 ** 8;
+    uint leverage = 5;
 
     // our contract on avalanche testnet
     address constant USDC_CONTRACT_ADDRESS = 0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C;
@@ -126,24 +120,42 @@ contract AvaPerps is PriceConsumer {
 
     ERC20Copy USDC_CONTRACT;
     Market market;
-    AMM amm;
     address owner;
+
+    address[4] internal oracles = [
+        0x5498BB86BC934c8D34FDA08E81D444153d0D06aD,
+        0x31CF013A08c6Ac228C94551d535d5BAfE19c602a,
+        0x86d67c3D38D2bCeE722E601025C25a575021c6EA,
+        0x34C4c526902d88a3Aa98DB8a9b802603EB1E3470
+    ];
+    AMM[4] public amms;
+
+    function oracle_price(uint index) public view returns (int) {
+        return AggregatorInterface(oracles[index]).latestAnswer();
+    }
+
+    function initialize_amm() internal {
+        AMM memory amm;
+        for (uint i = 0; i < 4; i++) {
+            amm = AMM(
+                oracles[i],
+                1000 * peg_multiplier,
+                1000 * uint(oracle_price(i)) * peg_multiplier,
+                0,
+                0,
+                3600, // 1 hour in seconds
+                0,
+                0
+            );
+            amms[i] = amm;
+        }
+    }
 
     constructor() public {
         owner = msg.sender;
         USDC_CONTRACT = ERC20Copy(USDC_CONTRACT_ADDRESS);
 
-        amm = AMM(
-            0x5498BB86BC934c8D34FDA08E81D444153d0D06aD, // not necessary
-            1000 * peg_multiplier,
-            1000 * peg_multiplier,
-            0,
-            0,
-            3600, // 1 hour in seconds
-            0,
-            0
-        );
-        market = Market(true, 0, 0, 0, 0, amm);
+        initialize_amm();
     }
     
     function set_leverage(uint lev) public {
@@ -168,16 +180,16 @@ contract AvaPerps is PriceConsumer {
         USDC_CONTRACT.transfer(msg.sender, amount_usdc);
     }
 
-    function open_long(uint256 amount_xusdc) public {
+    function open_long(uint index, uint256 amount_xusdc) public {
         // require(
         //     user_base() >= 0,
         //     "cannot open long while short"
         // );
 
-        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
-        uint256 quote1 = amm.quote_asset_amount + amount_xusdc;
+        uint256 k = amms[index].base_asset_amount * amms[index].quote_asset_amount;
+        uint256 quote1 = amms[index].quote_asset_amount + amount_xusdc;
         uint256 base1 = k / quote1;
-        uint256 amount_xavax = amm.base_asset_amount - base1;
+        uint256 amount_xavax = amms[index].base_asset_amount - base1;
 
         // using '>' forces users to always have some collateral left
         // helpful for funding rates
@@ -191,17 +203,17 @@ contract AvaPerps is PriceConsumer {
 
         // modify amm
 
-        amm.base_asset_amount = base1;
-        amm.quote_asset_amount = quote1;
+        amms[index].base_asset_amount = base1;
+        amms[index].quote_asset_amount = quote1;
     }
 	
-    function close_long(uint256 amount_xusdc) public {
+    function close_long(uint index, uint256 amount_xusdc) public {
         // modify user
 
-        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
-        uint256 quote1 = amm.quote_asset_amount - amount_xusdc;
+        uint256 k = amms[index].base_asset_amount * amms[index].quote_asset_amount;
+        uint256 quote1 = amms[index].quote_asset_amount - amount_xusdc;
         uint256 base1 = k / quote1;
-        uint256 amount_xavax = base1 - amm.base_asset_amount;
+        uint256 amount_xavax = base1 - amms[index].base_asset_amount;
 
         require(
             user_base() >= int(amount_xavax),
@@ -213,25 +225,25 @@ contract AvaPerps is PriceConsumer {
 
         // modify amm
 
-        amm.base_asset_amount = base1;
-        amm.quote_asset_amount = quote1;
+        amms[index].base_asset_amount = base1;
+        amms[index].quote_asset_amount = quote1;
     }
 	
-    function open_short(uint256 amount_xusdc) public {
+    function open_short(uint index, uint256 amount_xusdc) public {
         // require(
         //     user_base() <= 0,
         //     "cannot open short while long"
         // );
 
         require(
-            amm.quote_asset_amount > amount_xusdc,
+            amms[index].quote_asset_amount > amount_xusdc,
             "cannot make quote_asset pool go negative"
         );
 
-        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
-        uint256 quote1 = amm.quote_asset_amount - amount_xusdc;
+        uint256 k = amms[index].base_asset_amount * amms[index].quote_asset_amount;
+        uint256 quote1 = amms[index].quote_asset_amount - amount_xusdc;
         uint256 base1 = k / quote1;
-        uint256 amount_xavax = base1 - amm.base_asset_amount;
+        uint256 amount_xavax = base1 - amms[index].base_asset_amount;
 
         // using '>' forces users to always have some collateral left
         // helpful for funding rates
@@ -245,17 +257,17 @@ contract AvaPerps is PriceConsumer {
 
         // modify amm
 
-        amm.base_asset_amount = base1;
-        amm.quote_asset_amount = quote1;
+        amms[index].base_asset_amount = base1;
+        amms[index].quote_asset_amount = quote1;
     }
 	
-    function close_short(uint256 amount_xusdc) public {
+    function close_short(uint index, uint256 amount_xusdc) public {
         // modify user
 
-        uint256 k = amm.base_asset_amount * amm.quote_asset_amount;
-        uint256 quote1 = amm.quote_asset_amount + amount_xusdc;
+        uint256 k = amms[index].base_asset_amount * amms[index].quote_asset_amount;
+        uint256 quote1 = amms[index].quote_asset_amount + amount_xusdc;
         uint256 base1 = k / quote1;
-        uint256 amount_xavax = amm.base_asset_amount - base1;
+        uint256 amount_xavax = amms[index].base_asset_amount - base1;
 
         require(
             -user_base() >= int(amount_xavax),
@@ -267,8 +279,8 @@ contract AvaPerps is PriceConsumer {
 
         // modify amm
 
-        amm.base_asset_amount = base1;
-        amm.quote_asset_amount = quote1;
+        amms[index].base_asset_amount = base1;
+        amms[index].quote_asset_amount = quote1;
     }
 }
 

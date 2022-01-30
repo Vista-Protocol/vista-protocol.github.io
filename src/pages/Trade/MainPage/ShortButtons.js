@@ -14,13 +14,12 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const cap = 5;
-const peg_multiplier = 10 ** 6;
 
 export default function OrderShort({ state, contract_avaperps, amount }) {
     const { user } = useMoralis();
 
     const {
-        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, perp_name
+        perp, amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, perp_name, peg_multiplier
     } = state;
 
     const perp_price = amm_quote / amm_base;
@@ -56,7 +55,7 @@ export default function OrderShort({ state, contract_avaperps, amount }) {
                     onClick={async () => {
                         const from = user.get('ethAddress');
                         await contract_avaperps.methods.open_short(
-                            amount * peg_multiplier
+                            perp, amount * peg_multiplier
                         ).send({ from });
                     }}
                 >
@@ -72,7 +71,7 @@ export default function OrderShort({ state, contract_avaperps, amount }) {
                     onClick={async () => {
                         const from = user.get('ethAddress');
                         await contract_avaperps.methods.close_short(
-                            amount * peg_multiplier
+                            perp, amount * peg_multiplier
                         ).send({ from });
                     }}
                 >

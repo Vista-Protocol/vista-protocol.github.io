@@ -22,8 +22,9 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const cap = 5;
+const peg_multiplier = 10 ** 8;
 
-export default function App({ contract_avaperps, contract_erc20copy, net_id, address_avaperps, children, perp_name }) {
+export default function App({ contract_avaperps, contract_erc20copy, net_id, address_avaperps, children, perp_name, perp }) {
     const { user } = useMoralis();
 
     const [state, setState] = React.useState();
@@ -31,37 +32,35 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
     async function get_avax_price() {
         let from = false;
         if (user) {
-            // console.log('user not logged in');
+            console.log('user not logged in');
             from = user.get('ethAddress');
         }
 
-        if (!contract_avaperps) {
+        if (contract_avaperps == null) {
             console.log('contract not initialized');
             return;
         }
 
-        const url = 'https://api.covalenthq.com/v1/pricing/tickers/?quote-currency=USD&format=JSON&tickers=AVAX&key=ckey_a1450a78fcfc4d27aa954670c11';
-
         const promises = [
-            contract_avaperps.methods.amm_base().call(),
-            contract_avaperps.methods.amm_quote().call(),
-            user ? contract_avaperps.methods.user_base().call({ from }) : 'Not logged in',
+            contract_avaperps.methods.amms(perp).call(),
+            user ? contract_avaperps.methods.user_base(perp).call({ from }) : 'Not logged in',
             user ? contract_avaperps.methods.user_quote().call({ from }) : 'Not logged in',
             user ? contract_avaperps.methods.user_collateral().call({ from }) : 'Not logged in',
-            axios.get(url),
-            contract_erc20copy ? contract_erc20copy.methods.balanceOf(address_avaperps).call() : 'n',
+            contract_avaperps.methods.oracle_price(perp).call(),
+            contract_erc20copy.methods.balanceOf(address_avaperps).call(),
         ];
 
         const values = await Promise.all(promises);
         // console.log(values)
         let [
-            amm_base, amm_quote, user_base, user_quote, user_collateral, resp, tvl
+            amm, user_base, user_quote, user_collateral, oracle_price, tvl
         ] = values;
 
-        const avax_price = resp.data.data.items[0].quote_rate;
+        const amm_base = amm.base_asset_amount;
+        const amm_quote = amm.quote_asset_amount;
 
         const obj = {
-            amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, tvl, perp_name
+            amm_base, amm_quote, user_base, user_quote, user_collateral, oracle_price, tvl, perp_name, peg_multiplier, perp
         };
 
         setState(obj);
@@ -69,7 +68,9 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
 
     React.useEffect(() => {
         get_avax_price();
-    }, [perp_name, user]);
+    }, [
+        user, perp
+    ]);
 
     if (net_id !== 43113) {
         return (
@@ -86,10 +87,6 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
 
     return (
         <Box
-            style={{
-                background: 'linear-gradient(black, fireBrick)',
-                height: '100vh'
-            }}
             p={3}
         >
             <Grid

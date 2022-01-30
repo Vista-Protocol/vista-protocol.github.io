@@ -7,7 +7,6 @@ import { Typography, Divider } from '@mui/material';
 
 import TimeComponent from './TimeComponent';
 
-const peg_multiplier = 10 ** 6;
 const cap = 5;
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -29,18 +28,17 @@ function GridItem({ xs = 2, children }) {
 
 export default function BasicGrid({ state }) {
     const {
-        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, tvl, perp_name
+        amm_base, amm_quote, user_base, user_quote, user_collateral, oracle_price, tvl, perp_name, peg_multiplier
     } = state;
-    console.log(perp_name)
 
-    const perp_price = amm_quote / amm_base;
+    const mark_price = amm_quote / amm_base;
     const portfolio_value = (
         (
-            perp_price * Math.abs(user_base) + Number(user_quote)
+            mark_price * Math.abs(user_base) + Number(user_quote)
          ) / cap / peg_multiplier
     ).toFixed(2);
 
-    const funding_rate = (perp_price - avax_price) / avax_price / 24;
+    const funding_rate = (mark_price - oracle_price) / oracle_price / 24;
     const apy = Math.pow(1 + funding_rate, 24 * 365) - 1;
 
     const position = `
@@ -52,218 +50,221 @@ export default function BasicGrid({ state }) {
     `;
 
     return (
-        <Box
-            sx={{
-                // flexGrow: 1,
-                width: '100%'
-            }}
-        >
+        <Box m={2}>
 
-            <Grid container spacing={2} columns={11}>
-                <GridItem
-                    xs={3}
-                >
-                    <Typography
-                        variant='h4'
-                    >
-                        Your Data
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {position}
+            <Grid container spacing={2}>
 
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
+                <Grid container item spacing={2} columns={11}>
+                    <GridItem
+                        xs={3}
                     >
-                        Position
-                    </Typography>
-                </GridItem>
+                        <Typography
+                            variant='h4'
+                        >
+                            Your Data
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {position}
+
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            Position
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            (user_quote / peg_multiplier / cap).toFixed(2)
+                        } USDC
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            Liquid Capital
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            portfolio_value
+                        } USDC
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            Portfolio Value
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        0 USDC
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            Liquidation Price
+                        </Typography>
+                    </GridItem>
+                </Grid>
+                
+                <Grid container item spacing={2} columns={11}>
+                    <GridItem
+                        xs={3}
+                    >
+                        <Typography
+                            variant='h4'
+                        >
+                            Market Data
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            (mark_price).toFixed(2)
+                        } USDC
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            {perp_name}-PERP Price
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            (oracle_price / peg_multiplier).toFixed(2)
+                        } USDC
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            {perp_name} Price
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            (funding_rate * 100).toFixed(2)
+                        }% in <TimeComponent />
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            Predicted Funding Rate
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            apy.toFixed(2)
+                        }% APY
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            24h Avg Funding
+                        </Typography>
+                    </GridItem>
+                </Grid>
+                
+                <Grid container item spacing={2} columns={11}>
+                    <GridItem
+                        xs={3}
+                    >
+                        <Typography
+                            variant='h4'
+                        >
+                            vAMM Data
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            (
+                                tvl / peg_multiplier
+                            ).toFixed(2)
+                        } USDC
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            TVL
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            (
+                                amm_base / peg_multiplier
+                            ).toFixed(2)
+                        } {perp_name}-PERP
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            Base Asset Amount
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            (
+                                amm_quote / peg_multiplier
+                            ).toFixed(2)
+                        } USDC
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            Quote Asset Amount
+                        </Typography>
+                    </GridItem>
+                
+                    <GridItem>
+                        {
+                            (
+                                amm_quote * amm_base / peg_multiplier ** 2
+                            ).toFixed(2)
+                        }
+                        
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        
+                        <Typography
+                            variant='subtitle2'
+                        >
+                            k
+                        </Typography>
+                    </GridItem>
+                </Grid>
             
-                <GridItem>
-                    {
-                        (user_quote / peg_multiplier / cap).toFixed(2)
-                    } USDC
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        Liquid Capital
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        portfolio_value
-                    } USDC
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        Portfolio Value
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    0 USDC
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        Liquidation Price
-                    </Typography>
-                </GridItem>
-            
-                <GridItem
-                    xs={3}
-                >
-                    <Typography
-                        variant='h4'
-                    >
-                        Market Data
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        perp_price.toFixed(2)
-                    } USDC
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        {perp_name}-PERP Price
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        avax_price.toFixed(2)
-                    } USDC
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        {perp_name} Price
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        (funding_rate * 100).toFixed(2)
-                    }% in <TimeComponent />
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        Predicted Funding Rate
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        apy.toFixed(2)
-                    }% APY
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        24h Avg Funding
-                    </Typography>
-                </GridItem>
-        
-                <GridItem
-                    xs={3}
-                >
-                    <Typography
-                        variant='h4'
-                    >
-                        vAMM Data
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        (
-                            tvl / peg_multiplier
-                        ).toFixed(2)
-                    } USDC
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        TVL
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        (
-                            amm_quote / peg_multiplier
-                        ).toFixed(2)
-                    } USDC
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        Quote Asset Amount
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        (
-                            amm_base / peg_multiplier
-                        ).toFixed(2)
-                    } {perp_name}-PERP
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        Base Asset Amount
-                    </Typography>
-                </GridItem>
-            
-                <GridItem>
-                    {
-                        (
-                            amm_quote * amm_base / peg_multiplier ** 2
-                        ).toFixed(2)
-                    }
-                    
-                    <Divider sx={{ borderBottomWidth: 2 }} />
-                    
-                    <Typography
-                        variant='subtitle2'
-                    >
-                        k
-                    </Typography>
-                </GridItem>
             </Grid>
-        
+            
         </Box>
-        
+
     );
 }
