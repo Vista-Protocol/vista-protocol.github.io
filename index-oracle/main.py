@@ -35,9 +35,8 @@ provider = 'https://speedy-nodes-nyc.moralis.io/ca66f16031f65e247cfa902a/avalanc
 w3 = Web3(Web3.HTTPProvider(provider))
 w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
-with open('../src/contracts/address_avaindex.txt') as f:
-    contract_address = f.read()
-with open('../src/contracts/abi_avaindex.json') as f:
+contract_address = '0x92E8D075eadB70323269b4aB45eFE5956b8d01B9'
+with open('index-oracle/abi.json') as f:
     abi = json.load(f)
 
 contract = w3.eth.contract(address=contract_address, abi=abi)
@@ -122,7 +121,7 @@ def main() -> int:
 
     return index_price
 
-# main()
+main()
 
 def cors_enabled_function(request):
     # For more information about CORS and CORS preflight requests, see:
@@ -146,4 +145,6 @@ def cors_enabled_function(request):
         'Access-Control-Allow-Origin': '*'
     }
 
-    return main()
+    return {
+        'data': main()
+    }

@@ -38,7 +38,7 @@ export default function BasicGrid({ state }) {
          ) / cap / peg_multiplier
     ).toFixed(2);
 
-    const funding_rate = (mark_price - oracle_price) / oracle_price / 24;
+    const funding_rate = (mark_price * peg_multiplier - oracle_price) / oracle_price / 24;
     const apy = Math.pow(1 + funding_rate, 24 * 365) - 1;
 
     const position = `

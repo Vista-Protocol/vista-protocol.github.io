@@ -22,8 +22,8 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
     const { user } = useMoralis();
 
     const [open, setOpen] = React.useState(false);
-    const [amount, setAmount] = React.useState(0);
-    const [available, setAvailable] = React.useState(0);
+    const [amount, setAmount] = React.useState();
+    const [available, setAvailable] = React.useState(-1);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -40,14 +40,19 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
 
     const getAvailable = async () => {
         const resp = await contract_erc20copy.methods.balanceOf(from).call();
+        console.log(resp)
         setAvailable(
-            (resp / peg_multiplier).toFixed(2)
+            resp / peg_multiplier
         );
-    } 
+    }
 
     React.useEffect(() => {
-        getAvailable();
+        while (available < 0) {
+            getAvailable();
+        }        
     }, []);
+
+    console.log(available)
 
     async function deposit_collateral() {
         await contract_erc20copy.methods.approve(
@@ -103,18 +108,24 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
 
                 <DialogContent>
                     <DialogContentText>
-                        Transfer USDC to and from this trading platform. {available} available.
+                        Transfer USDC to and from this trading platform.
                     </DialogContentText>
 
                     <TextField
                         margin="dense"
                         label="Amount (USDC)"
-                        fullWidth
+                        // fullWidth
                         variant="standard"
                         type='number'
+                        helperText={available.toFixed(2) + ' USDC available'}
 
                         value={amount}
-                        onChange={event => setAmount(event.target.value)}
+                        onChange={event => {
+                            const value = event.target.value;
+                            if (value > 0 && value <= available) {
+                                setAmount(value);
+                            }
+                        }}
                     />
                 </DialogContent>
 

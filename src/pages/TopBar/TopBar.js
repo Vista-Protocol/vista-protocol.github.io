@@ -14,7 +14,7 @@ import Web3 from 'web3';
 import DepositButton from './DepositButton';
 import FaucetButton from './FaucetButton';
 import Login from './Login';
-import logo from '../../static/logo.svg';
+import logo from '../../static/VistaRedLogo.png';
 
 export default function TopBar({ contract_avaperps, contract_erc20copy }) {
     return (
@@ -27,7 +27,7 @@ export default function TopBar({ contract_avaperps, contract_erc20copy }) {
         >
             <Toolbar>
                 
-                <Box mr={2}>
+                <Box m={2}>
                     <img src={logo} alt="logo" height="55px" />
                 </Box>
 
@@ -49,6 +49,7 @@ export default function TopBar({ contract_avaperps, contract_erc20copy }) {
                 />
 
                 <Login />
+                
             </Toolbar>
         </AppBar>
     )

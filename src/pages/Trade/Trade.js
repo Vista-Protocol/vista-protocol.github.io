@@ -75,7 +75,7 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
     if (net_id !== 43113) {
         return (
             <Loading
-                message={`Wrong network (${net_id}). Should be Avalanche (43113).`}
+                message={`Wrong network. Should be Avalanche Fuji Testnet (Network ID 43113).`}
             />
         );
     }
