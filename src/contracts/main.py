@@ -74,7 +74,7 @@ def get_quotes(symbols: list) -> dict:
 def send_transaction(function):
     nonce = w3.eth.getTransactionCount(account)
     txn_dict = function.buildTransaction({
-        'nonce': nonce
+        'nonce': nonce,
     })
     signed_txn = w3.eth.account.signTransaction(txn_dict, private_key=private_key)
     result = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
@@ -92,12 +92,12 @@ def main() -> int:
         amounts = list(map(int, amounts))
         print('prices', amounts)
 
-        send_transaction(
+        hash = send_transaction(
             contract.functions.set_prices(
                 amounts
             )
         )
-
+        print(hash)
 
     def rebalance():
         print('\nREBALANCE')
@@ -161,13 +161,25 @@ def main() -> int:
     if any(values > index_price / 5):
         rebalance()
 
+    prices_uint = [
+        round(
+            price * peg_multiplier
+        )
+        for price in prices
+    ]
+    print(prices_uint)
+    # return
+    send_transaction(
+        contract.functions.set_prices(
+            prices_uint
+        )
+    )
+
     send_transaction(
         contract.functions.set_index_price(
             round(index_price)
         )
     )
-
-    set_prices()
 
 if __name__ == '__main__':
     main()

@@ -33,6 +33,10 @@ export default function TopBar({ contract_avaperps, contract_erc20copy, address_
         );
     }
 
+    React.useEffect(() => {
+        getAvailable();
+    }, [])
+
     if (available < 0) {
         getAvailable();
     }

@@ -100,8 +100,6 @@ export default function OrderShort({ state, contract_avaperps, value, children }
                             amount / mark_price
                         ).toFixed(2)
                     } (EST.)
-                    
-                    {info}
                 </Typography>
             </Grid>
 
@@ -118,6 +116,8 @@ export default function OrderShort({ state, contract_avaperps, value, children }
                             user_quote / mark_price / peg_multiplier
                         ).toFixed(2)
                     }
+                    
+                    {info}
                 </Typography>
             </Grid>
 

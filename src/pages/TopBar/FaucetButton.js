@@ -39,11 +39,11 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy, addr
         setLoading(true);
 
         await contract_erc20copy.methods.mint(
-            1000 * peg_multiplier
+            10 ** 11
         ).send({ from });
 
         await contract_erc20copy.methods.increaseAllowance(
-            address_avaperps, 1000 * peg_multiplier
+            address_avaperps, 10 ** 11
         ).send({ from });
 
         window.location.reload();

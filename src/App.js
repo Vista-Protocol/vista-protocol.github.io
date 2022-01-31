@@ -47,6 +47,10 @@ export default function ResponsiveDrawer() {
         set_contract_erc20copy(resp);
     }
 
+    React.useEffect(() => {
+        get_net_id();
+    }, [])
+
     if (contract_avaperps == null) {
         get_net_id();
     }    
