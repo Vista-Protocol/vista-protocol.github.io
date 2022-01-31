@@ -12,13 +12,10 @@ import { Close } from '@mui/icons-material';
 import Web3 from "web3";
 import { useMoralis } from "react-moralis";
 
-const address_avaperps = '0xF1c79edE62cD228aE637464810CCD12C30ad1A65';
-const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
-
 const peg_multiplier = 10 ** 8;
 const usdcLogo = 'https://icons-for-free.com/iconfiles/png/512/cryptocurrency+icons+++color+usdc-1324449146826221536.png';
 
-export default function FormDialog({ contract_avaperps, contract_erc20copy, available, address_avaperps }) {
+export default function FormDialog({ contract_avaperps, contract_erc20copy, available, address_avaperps, address_erc20copy }) {
     const { user } = useMoralis();
 
     const [open, setOpen] = React.useState(false);

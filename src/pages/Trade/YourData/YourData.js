@@ -17,9 +17,9 @@ const Item = styled(Paper)(({ theme }) => ({
 //   color: theme.palette.common.white,
 }));
 
-function GridItem({ xs = 2, children }) {
+function GridItem({ children }) {
     return (
-        <Grid item xs={xs}>
+        <Grid item xs={3}>
             <Item>
                 {children}
             </Item>
@@ -55,7 +55,7 @@ export default function BasicGrid({ state }) {
 
             <Grid container spacing={2}>
 
-                <Grid container item spacing={2} columns={11}>
+                <Grid container item spacing={2}>
                     <GridItem
                         xs={3}
                     >
@@ -105,21 +105,9 @@ export default function BasicGrid({ state }) {
                             Liquid Capital
                         </Typography>
                     </GridItem>
-                
-                    <GridItem>
-                        0 USDC
-                        
-                        <Divider sx={{ borderBottomWidth: 2 }} />
-                        
-                        <Typography
-                            variant='subtitle2'
-                        >
-                            Liquidation Price
-                        </Typography>
-                    </GridItem>
                 </Grid>
                 
-                <Grid container item spacing={2} columns={11}>
+                <Grid container item spacing={2}>
                     <GridItem
                         xs={3}
                     >
@@ -172,23 +160,9 @@ export default function BasicGrid({ state }) {
                             Predicted Funding Rate
                         </Typography>
                     </GridItem>
-                
-                    <GridItem>
-                        {
-                            apy.toFixed(2)
-                        }% APY
-                        
-                        <Divider sx={{ borderBottomWidth: 2 }} />
-                        
-                        <Typography
-                            variant='subtitle2'
-                        >
-                            24h Avg Funding
-                        </Typography>
-                    </GridItem>
                 </Grid>
                 
-                <Grid container item spacing={2} columns={11}>
+                <Grid container item spacing={2}>
                     <GridItem
                         xs={3}
                     >
@@ -244,22 +218,6 @@ export default function BasicGrid({ state }) {
                             variant='subtitle2'
                         >
                             Quote Asset Amount
-                        </Typography>
-                    </GridItem>
-                
-                    <GridItem>
-                        {
-                            (
-                                amm_quote * amm_base / peg_multiplier ** 2
-                            ).toFixed(2)
-                        }
-                        
-                        <Divider sx={{ borderBottomWidth: 2 }} />
-                        
-                        <Typography
-                            variant='subtitle2'
-                        >
-                            k
                         </Typography>
                     </GridItem>
                 </Grid>

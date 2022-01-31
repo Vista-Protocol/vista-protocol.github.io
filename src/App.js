@@ -18,9 +18,7 @@ import SelectPerp from './SelectPerp';
 
 import abi_avaperps from './contracts/abi_avaperps.json';
 import abi_erc20copy from './contracts/abi_erc20copy.json';
-
-const address_avaperps = '0xb46EB53BEe746a9c82310EB8481B72d61F58e2F9';
-const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
+import { address_erc20copy, address_avaperps } from './contracts/addresses.json';
 
 const drawerWidth = 0;
 
@@ -48,10 +46,6 @@ export default function ResponsiveDrawer() {
         resp = new web3.eth.Contract(abi_erc20copy, address_erc20copy);
         set_contract_erc20copy(resp);
     }
-
-    React.useEffect(() => {
-        get_net_id();
-    }, [perp]);
 
     if (contract_avaperps == null) {
         get_net_id();
@@ -96,6 +90,7 @@ export default function ResponsiveDrawer() {
                 contract_erc20copy={contract_erc20copy}
                 contract_avaperps={contract_avaperps}
                 address_avaperps={address_avaperps}
+                address_erc20copy={address_erc20copy}
                 pages={pages}
                 set_page={set_page}
             />

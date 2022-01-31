@@ -17,7 +17,7 @@ import Login from './Login';
 import logo from '../../static/VistaRedLogo.png';
 const peg_multiplier = 10 ** 8;
 
-export default function TopBar({ contract_avaperps, contract_erc20copy, address_avaperps }) {
+export default function TopBar({ contract_avaperps, contract_erc20copy, address_avaperps, address_erc20copy }) {
     const { user } = useMoralis();
     const [available, setAvailable] = React.useState(-1);
     
@@ -32,10 +32,6 @@ export default function TopBar({ contract_avaperps, contract_erc20copy, address_
             resp / peg_multiplier
         );
     }
-
-    React.useEffect(() => {
-        getAvailable();
-    }, [available]);
 
     if (available < 0) {
         getAvailable();
@@ -75,6 +71,7 @@ export default function TopBar({ contract_avaperps, contract_erc20copy, address_
                     contract_avaperps={contract_avaperps}
                     available={available}
                     address_avaperps={address_avaperps}
+                    address_erc20copy={address_erc20copy}
                 />
 
                 <Login />

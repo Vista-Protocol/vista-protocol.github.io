@@ -80,8 +80,7 @@ export default function CustomizedDialogs({ composition }) {
                     >
                         The INDEX token derives its price from the Avalanche network's top 10 projects by market cap, excluding stablecoins.
                         INDEX was established on 2022-01-19T07:50:00.000Z at 1 USDC per token, containing LINK, REN, AMPL, ORN, AVAX, ALEPH, SWAP, ANY, SUSHI, and REEF.
-                        If one of INDEX's component tokens drops out of the top 10, it can be replaced, as demonstrated below with the button,
-                        though in production a DAO vote will be needed.
+                        If one of INDEX's component tokens drops out of the top 10, a 'replace_token' function can be called by a DAO vote.
                         INDEX's price is updated every 5 minutes, with automatic rebalancing if a single component exceeds 20% weight.
                     </Typography>
 

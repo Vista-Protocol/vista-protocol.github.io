@@ -38,7 +38,7 @@ export default function OrderShort({ state, contract_avaperps, value, children }
         get_composition();
     }
 
-    console.log(composition)    
+    console.log(composition);
 
     const info = perp ? <div /> : (
         <IndexInfo

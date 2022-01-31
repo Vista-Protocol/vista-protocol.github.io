@@ -147,7 +147,7 @@ def main() -> int:
         )
     )
 
-main()
+# main()
 
 def pubsub(event, context):
     main()

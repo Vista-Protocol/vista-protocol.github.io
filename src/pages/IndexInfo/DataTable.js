@@ -3,7 +3,11 @@ import { DataGrid } from '@mui/x-data-grid';
 
 const peg_multiplier = 10 ** 8;
 const type = 'number';
-const columns = 'token amount'.split(' ').map( field => ({ field, type }));
+const columns = [
+    { field: 'token' },
+    { field: 'amount', type: 'number' },
+    { field: 'price', type: 'number' },
+]
 
 const rows = [
     { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
@@ -19,9 +23,12 @@ const rows = [
 
 export default function DataGridDemo({ composition }) {
     const rows = [...Array(10).keys()].map( (value, id) => {
-        const token = composition[0][id];
+        const token = composition[0][id].toUpperCase();
         const amount = composition[1][id];
-        return { id, token, amount };
+        const price = '$' + (
+            composition[2][id] / peg_multiplier
+        ).toFixed(2);
+        return { id, token, amount, price };
     });
 
     return (
