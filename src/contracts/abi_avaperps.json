@@ -254,6 +254,19 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256[10]",
+				"name": "prices_",
+				"type": "uint256[10]"
+			}
+		],
+		"name": "set_prices",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "index",
 				"type": "uint256"

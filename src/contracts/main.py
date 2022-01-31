@@ -82,6 +82,23 @@ def send_transaction(function):
 
 def main() -> int:
 
+    def set_prices():
+
+        amounts = np.around(
+            np.array(
+                prices
+            ) * peg_multiplier
+        )
+        amounts = list(map(int, amounts))
+        print('prices', amounts)
+
+        send_transaction(
+            contract.functions.set_prices(
+                amounts
+            )
+        )
+
+
     def rebalance():
         print('\nREBALANCE')
 
@@ -98,6 +115,10 @@ def main() -> int:
                 amounts
             )
         )
+
+        set_prices()
+
+        exit()
 
     symbols, amounts, prices, index_price = contract.functions.composition().call()
     print('symbols', symbols)
@@ -125,7 +146,6 @@ def main() -> int:
     # check token replacement
     if not all(amounts):
         rebalance()
-        return
 
     # below updates price and
     # checks normal rebalancing, if one component exceeds 20% weight
@@ -147,7 +167,10 @@ def main() -> int:
         )
     )
 
-# main()
+    set_prices()
+
+if __name__ == '__main__':
+    main()
 
 def pubsub(event, context):
     main()

@@ -43,6 +43,12 @@ contract AvaIndex {
         amounts = amounts_;
     }
 
+    // call this to rebalance if any token's price * weight exceeds 20% of index oracle price
+    // starting off, all tokens' price * weight is 10% of oracle price
+    function set_prices(uint256[10] memory prices_) public {
+        prices = prices_;
+    }
+
     function composition() public view returns (
         string[10] memory, uint256[10] memory, uint256[10] memory, uint
     ) {
