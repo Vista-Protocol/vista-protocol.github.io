@@ -1,160 +1,5 @@
 [
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount_xusdc",
-				"type": "uint256"
-			}
-		],
-		"name": "close_long",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount_xusdc",
-				"type": "uint256"
-			}
-		],
-		"name": "close_short",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount_usdc",
-				"type": "uint256"
-			}
-		],
-		"name": "deposit_collateral",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount_xusdc",
-				"type": "uint256"
-			}
-		],
-		"name": "open_long",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount_xusdc",
-				"type": "uint256"
-			}
-		],
-		"name": "open_short",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			}
-		],
-		"name": "replace_token",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256[10]",
-				"name": "amounts_",
-				"type": "uint256[10]"
-			}
-		],
-		"name": "set_amounts",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "int256",
-				"name": "price",
-				"type": "int256"
-			}
-		],
-		"name": "set_index_price",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "lev",
-				"type": "uint256"
-			}
-		],
-		"name": "set_leverage",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256[10]",
-				"name": "tokens_",
-				"type": "uint256[10]"
-			}
-		],
-		"name": "set_tokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -162,23 +7,6 @@
 	{
 		"stateMutability": "payable",
 		"type": "fallback"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount_usdc",
-				"type": "uint256"
-			}
-		],
-		"name": "withdraw_collateral",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	},
 	{
 		"inputs": [
@@ -238,12 +66,57 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount_xusdc",
 				"type": "uint256"
 			}
 		],
-		"name": "amounts",
+		"name": "close_long",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount_xusdc",
+				"type": "uint256"
+			}
+		],
+		"name": "close_short",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "composition",
 		"outputs": [
+			{
+				"internalType": "string[10]",
+				"name": "",
+				"type": "string[10]"
+			},
+			{
+				"internalType": "uint256[10]",
+				"name": "",
+				"type": "uint256[10]"
+			},
+			{
+				"internalType": "uint256[10]",
+				"name": "",
+				"type": "uint256[10]"
+			},
 			{
 				"internalType": "uint256",
 				"name": "",
@@ -254,34 +127,52 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "composition",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "uint256[10]",
-				"name": "",
-				"type": "uint256[10]"
-			},
-			{
-				"internalType": "uint256[10]",
-				"name": "",
-				"type": "uint256[10]"
+				"internalType": "uint256",
+				"name": "amount_usdc",
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "deposit_collateral",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "index_price",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "int256",
-				"name": "",
-				"type": "int256"
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount_xusdc",
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "open_long",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount_xusdc",
+				"type": "uint256"
+			}
+		],
+		"name": "open_short",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -295,9 +186,9 @@
 		"name": "oracle_price",
 		"outputs": [
 			{
-				"internalType": "int256",
+				"internalType": "uint256",
 				"name": "",
-				"type": "int256"
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -307,19 +198,57 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "index",
 				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "token",
+				"type": "string"
 			}
 		],
-		"name": "tokens",
-		"outputs": [
+		"name": "replace_token",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256[10]",
+				"name": "amounts_",
+				"type": "uint256[10]"
+			}
+		],
+		"name": "set_amounts",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "price",
 				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "set_index_price",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "lev",
+				"type": "uint256"
+			}
+		],
+		"name": "set_leverage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -366,5 +295,22 @@
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount_usdc",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw_collateral",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
 	}
 ]

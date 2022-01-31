@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/solc-0.6/contracts/token/ERC20/ERC20.sol";
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorInterface.sol";
@@ -17,24 +18,23 @@ contract AvaIndex {
     receive() external payable {}
 
     // ids of tokens on CoinMarketCap
-    uint256[10] public tokens;
+    string[10] tokens = ["LINK","REN","AMPL","ORN","AVAX","ALEPH","SWAP","ANY","SUSHI","REEF"];
 
     // number of shares of each token per dollar invested
-    uint256[10] public amounts;
+    uint256[10] amounts = [464900, 24308800, 9724700, 2114400, 122500, 13606100, 8241500, 430800, 1686600, 785307600];
 
-    int256 public index_price = 10 ** 8;
+    uint256[10] prices = [1706341978, 33845402, 94641014, 472652650, 7028340501, 50853610, 98272974, 1994998203, 424475879, 1016431];
 
-    function set_index_price(int price) public {
+    uint constant peg_multiplier = 10 ** 8;
+    uint index_price = peg_multiplier;
+
+    function set_index_price(uint price) public {
         index_price = price;
     }
-
-    // dao votes every quarter about changing index components
-    function set_tokens(uint256[10] memory tokens_) public {
-        tokens = tokens_;
-    }
     
-    function replace_token(uint index, uint id) public {
-        tokens[index] = id;
+    function replace_token(uint index, string memory token) public {
+        tokens[index] = token;
+        amounts[index] = 0; // sentinel for cloud function to know rebalancing is needed
     }
 
     // call this to rebalance if any token's price * weight exceeds 20% of index oracle price
@@ -43,8 +43,10 @@ contract AvaIndex {
         amounts = amounts_;
     }
 
-    function composition() public view returns (uint256[10] memory, uint256[10] memory) {
-        return (tokens, amounts);
+    function composition() public view returns (
+        string[10] memory, uint256[10] memory, uint256[10] memory, uint
+    ) {
+        return (tokens, amounts, prices, index_price);
     }
 }
 
@@ -115,7 +117,6 @@ contract AvaPerps is AvaIndex {
     // controlled by admin at first, later by DAO
     // will require some functions to withdraw money for repegging and payments to users affected by bugs 
     address insurance_account;
-    uint constant peg_multiplier = 10 ** 8;
     uint leverage = 5;
 
     // our contract on avalanche testnet
@@ -124,7 +125,7 @@ contract AvaPerps is AvaIndex {
     // random contract on javascript vm (remix default)
     // address constant USDC_CONTRACT_ADDRESS = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
 
-    ERC20Copy USDC_CONTRACT;
+    ERC20Copy USDC_CONTRACT = ERC20Copy(USDC_CONTRACT_ADDRESS);
     Market market;
     address owner;
     // int index_price = 0;
@@ -140,12 +141,14 @@ contract AvaPerps is AvaIndex {
     AMM[5] public amms;
 
     // if index = 0, meaning index, return state variable
-    function oracle_price(uint index) public view returns (int) {
+    function oracle_price(uint index) public view returns (uint) {
         if (index == 0) {
             return index_price;
         }
         else {
-            return AggregatorInterface(oracles[index]).latestAnswer();
+            return uint(
+                AggregatorInterface(oracles[index]).latestAnswer()
+            );
         }
     }
 
@@ -168,7 +171,6 @@ contract AvaPerps is AvaIndex {
 
     constructor() public {
         owner = msg.sender;
-        USDC_CONTRACT = ERC20Copy(USDC_CONTRACT_ADDRESS);
 
         initialize_amm();
     }
