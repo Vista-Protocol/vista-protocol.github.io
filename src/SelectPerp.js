@@ -3,6 +3,9 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 
+import { Toolbar } from '@mui/material';
+import IndexInfo from './pages/IndexInfo/IndexInfo';
+
 export default function SelectTextFields({ perp, set_perp, perps }) {
     const handleChange = (event) => {
         set_perp(event.target.value);
@@ -19,6 +22,7 @@ export default function SelectTextFields({ perp, set_perp, perps }) {
             noValidate
             autoComplete="off"
         >
+
             <TextField
                 id="outlined-select-currency"
                 select
@@ -32,6 +36,7 @@ export default function SelectTextFields({ perp, set_perp, perps }) {
                     </MenuItem>
                 ))}
             </TextField>
+
         </Box>
     );
 }

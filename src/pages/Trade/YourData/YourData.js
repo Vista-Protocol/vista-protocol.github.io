@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import { Typography, Divider } from '@mui/material';
 
 import TimeComponent from './TimeComponent';
+import IndexInfo from './../../IndexInfo/IndexInfo';
 
 const cap = 5;
 
@@ -28,7 +29,7 @@ function GridItem({ xs = 2, children }) {
 
 export default function BasicGrid({ state }) {
     const {
-        amm_base, amm_quote, user_base, user_quote, user_collateral, oracle_price, tvl, perp_name, peg_multiplier
+        amm_base, amm_quote, user_base, user_quote, user_collateral, oracle_price, tvl, perp_name, peg_multiplier, perp
     } = state;
 
     const mark_price = amm_quote / amm_base;
@@ -126,6 +127,7 @@ export default function BasicGrid({ state }) {
                             variant='h4'
                         >
                             Market Data
+
                         </Typography>
                     </GridItem>
                 
@@ -265,6 +267,6 @@ export default function BasicGrid({ state }) {
             </Grid>
             
         </Box>
-
+            
     );
 }

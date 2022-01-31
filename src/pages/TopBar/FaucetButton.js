@@ -12,16 +12,14 @@ import { Close } from '@mui/icons-material';
 import Web3 from "web3";
 import { useMoralis } from "react-moralis";
 
-const address_avaperps = '0xF1c79edE62cD228aE637464810CCD12C30ad1A65';
-const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
-
 const peg_multiplier = 10 ** 8;
 const usdcLogo = 'https://cdn-icons-png.flaticon.com/512/590/590415.png';
 
-export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
+export default function FormDialog({ contract_avaperps, contract_erc20copy, address_avaperps }) {
     const { user } = useMoralis();
 
     const [open, setOpen] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
     const [amount, setAmount] = React.useState(0);
 
     const handleClickOpen = () => {
@@ -38,11 +36,17 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
     }
 
     async function mint() {
+        setLoading(true);
+
         await contract_erc20copy.methods.mint(
             1000 * peg_multiplier
         ).send({ from });
 
-        handleClose();
+        await contract_erc20copy.methods.increaseAllowance(
+            address_avaperps, 1000 * peg_multiplier
+        ).send({ from });
+
+        window.location.reload();
     }
 
     return (
@@ -59,13 +63,13 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
                 Use Faucet
             </Button>
 
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open}>
                 <DialogTitle sx={{ m: 0, p: 2 }}>
                     Use Faucet
                     
                     <IconButton
                         aria-label="close"
-                        onClick={handleClose}
+                        onClick={loading ? handleClickOpen : handleClose}
                         sx={{
                             position: 'absolute',
                             right: 8,
@@ -79,7 +83,7 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
 
                 <DialogContent>
                     <DialogContentText>
-                        USDC Faucet on Avalanche Fuji Testnet
+                        USDC Faucet on Avalanche Fuji Testnet. Entails two transactions: minting test USDC and enabling you to deposit it.
                     </DialogContentText>
                 </DialogContent>
 

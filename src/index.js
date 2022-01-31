@@ -12,14 +12,15 @@ const APP_ID = "zWytrx6G5R9k0UdpqvrptVYFTcuLiX7XMHcue9QJ";
 const SERVER_URL = "https://l0fckgbjlk4g.usemoralis.com:2053/server";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
-  <ThemeProvider theme={theme}>
-    {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-    <CssBaseline />
-    <App />
-  </ThemeProvider>
-    </MoralisProvider>
-  </React.StrictMode>,
-  document.getElementById("root")
+//   <React.StrictMode>
+        <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
+            <ThemeProvider theme={theme}>
+                {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                <CssBaseline />
+                <App />
+            </ThemeProvider>
+        </MoralisProvider>
+//   </React.StrictMode>
+    ,
+    document.getElementById("root")
 );

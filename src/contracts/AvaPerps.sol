@@ -10,35 +10,41 @@ contract ERC20Copy is ERC20("USD Coin", "USDC") {
     }
 }
 
-contract PriceConsumer {
+// for index fund of top 10 avalanche tokens
+contract AvaIndex {
+    constructor() public {}
+    fallback() external payable {}
+    receive() external payable {}
 
-    // cannot set constant because uninitialized
-    AggregatorInterface internal priceFeed;
+    // ids of tokens on CoinMarketCap
+    uint256[10] public tokens;
 
-    constructor() public {
-        priceFeed = AggregatorInterface(0x5498BB86BC934c8D34FDA08E81D444153d0D06aD);
-		// above address for Avalanche Testnet, AVAX / USD, 8 decimals
-    }
-  
-    /**
-     * Returns the latest price
-     */
-    function getLatestPrice() public view returns (int256) {
-        return priceFeed.latestAnswer();
-    }
-  
-    /**
-     * Returns the latest price
-     */
-    function getLatestPrice(address oracle) public view returns (int256) {
-        return AggregatorInterface(oracle).latestAnswer();
+    // number of shares of each token per dollar invested
+    uint256[10] public amounts;
+
+    int256 public index_price = 10 ** 8;
+
+    function set_index_price(int price) public {
+        index_price = price;
     }
 
-    /**
-     * Returns the timestamp of the latest price update
-     */
-    function getLatestPriceTimestamp() public view returns (uint256) {
-        return priceFeed.latestTimestamp();
+    // dao votes every quarter about changing index components
+    function set_tokens(uint256[10] memory tokens_) public {
+        tokens = tokens_;
+    }
+    
+    function replace_token(uint index, uint id) public {
+        tokens[index] = id;
+    }
+
+    // call this to rebalance if any token's price * weight exceeds 20% of index oracle price
+    // starting off, all tokens' price * weight is 10% of oracle price
+    function set_amounts(uint256[10] memory amounts_) public {
+        amounts = amounts_;
+    }
+
+    function composition() public view returns (uint256[10] memory, uint256[10] memory) {
+        return (tokens, amounts);
     }
 }
 
@@ -46,7 +52,7 @@ contract PriceConsumer {
 // in the real version, we'll do something like this:
 // IERC20 USDC_CONTRACT = IERC20(USDT_CONTRACT_ADDRESS);
 // and call USDC_CONTRACT.transfer(address, uint256), etc.
-contract AvaPerps {
+contract AvaPerps is AvaIndex {
     // user collateral + positions information
     mapping(address => UserInfo) user; 
     // stays the same with multiple markets
@@ -55,8 +61,8 @@ contract AvaPerps {
         return user[msg.sender].collateral;
     }
 
-    function user_base() public view returns (int) {
-        return user[msg.sender].position.base_asset_amount;
+    function user_base(uint index) public view returns (int) {
+        return user[msg.sender].positions[index].base_asset_amount;
     }
 
     function user_quote() public view returns (uint) {
@@ -67,7 +73,7 @@ contract AvaPerps {
         address user_address;
         uint collateral; // usdc balance
         uint quote_asset_amount;
-        MarketPosition position; // array if more than one market
+        MarketPosition[5] positions; // array if more than one market
     }
 
     struct MarketPosition {
@@ -121,26 +127,35 @@ contract AvaPerps {
     ERC20Copy USDC_CONTRACT;
     Market market;
     address owner;
+    // int index_price = 0;
 
-    address[4] internal oracles = [
+    // index, avax, btc, eth, link
+    address[5] internal oracles = [
+        0x5498BB86BC934c8D34FDA08E81D444153d0D06aD,
         0x5498BB86BC934c8D34FDA08E81D444153d0D06aD,
         0x31CF013A08c6Ac228C94551d535d5BAfE19c602a,
         0x86d67c3D38D2bCeE722E601025C25a575021c6EA,
         0x34C4c526902d88a3Aa98DB8a9b802603EB1E3470
     ];
-    AMM[4] public amms;
+    AMM[5] public amms;
 
+    // if index = 0, meaning index, return state variable
     function oracle_price(uint index) public view returns (int) {
-        return AggregatorInterface(oracles[index]).latestAnswer();
+        if (index == 0) {
+            return index_price;
+        }
+        else {
+            return AggregatorInterface(oracles[index]).latestAnswer();
+        }
     }
 
     function initialize_amm() internal {
         AMM memory amm;
-        for (uint i = 0; i < 4; i++) {
+        for (uint i = 0; i < 5; i++) {
             amm = AMM(
                 oracles[i],
                 1000 * peg_multiplier,
-                1000 * uint(oracle_price(i)) * peg_multiplier,
+                1000 * uint(oracle_price(i)),
                 0,
                 0,
                 3600, // 1 hour in seconds
@@ -199,7 +214,7 @@ contract AvaPerps {
         );
 
         user[msg.sender].quote_asset_amount -= amount_xusdc;
-        user[msg.sender].position.base_asset_amount += int(amount_xavax);
+        user[msg.sender].positions[index].base_asset_amount += int(amount_xavax);
 
         // modify amm
 
@@ -216,12 +231,12 @@ contract AvaPerps {
         uint256 amount_xavax = base1 - amms[index].base_asset_amount;
 
         require(
-            user_base() >= int(amount_xavax),
+            user_base(index) >= int(amount_xavax),
             "not enough base_asset to sell"
         );
 
         user[msg.sender].quote_asset_amount += amount_xusdc;
-        user[msg.sender].position.base_asset_amount -= int(amount_xavax);
+        user[msg.sender].positions[index].base_asset_amount -= int(amount_xavax);
 
         // modify amm
 
@@ -253,7 +268,7 @@ contract AvaPerps {
         );
 
         user[msg.sender].quote_asset_amount -= amount_xusdc;
-        user[msg.sender].position.base_asset_amount -= int(amount_xavax);
+        user[msg.sender].positions[index].base_asset_amount -= int(amount_xavax);
 
         // modify amm
 
@@ -270,48 +285,16 @@ contract AvaPerps {
         uint256 amount_xavax = amms[index].base_asset_amount - base1;
 
         require(
-            -user_base() >= int(amount_xavax),
+            -user_base(index) >= int(amount_xavax),
             "not enough shorts to close"
         );
 
         user[msg.sender].quote_asset_amount += amount_xusdc;
-        user[msg.sender].position.base_asset_amount += int(amount_xavax);
+        user[msg.sender].positions[index].base_asset_amount += int(amount_xavax);
 
         // modify amm
 
         amms[index].base_asset_amount = base1;
         amms[index].quote_asset_amount = quote1;
-    }
-}
-
-// for index fund of top 10 avalanche tokens
-contract AvaIndex is AvaPerps {
-    constructor() public {}
-    fallback() external payable {}
-    receive() external payable {}
-
-    // ids of tokens on CoinMarketCap
-    uint256[10] public tokens;
-
-    // number of shares of each token per dollar invested
-    uint256[10] public amounts;
-
-    // dao votes every quarter about changing index components
-    function set_tokens(uint256[10] memory tokens_) public {
-        tokens = tokens_;
-    }
-    
-    function replace_token(uint index, uint id) public {
-        tokens[index] = id;
-    }
-
-    // call this to rebalance if any token's price * weight exceeds 20% of index oracle price
-    // starting off, all tokens' price * weight is 10% of oracle price
-    function set_amounts(uint256[10] memory amounts_) public {
-        amounts = amounts_;
-    }
-
-    function composition() public view returns (uint256[10] memory, uint256[10] memory) {
-        return (tokens, amounts);
     }
 }

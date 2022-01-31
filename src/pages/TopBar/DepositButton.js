@@ -18,12 +18,18 @@ const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 const peg_multiplier = 10 ** 8;
 const usdcLogo = 'https://icons-for-free.com/iconfiles/png/512/cryptocurrency+icons+++color+usdc-1324449146826221536.png';
 
-export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
+export default function FormDialog({ contract_avaperps, contract_erc20copy, available, address_avaperps }) {
     const { user } = useMoralis();
 
     const [open, setOpen] = React.useState(false);
     const [amount, setAmount] = React.useState();
-    const [available, setAvailable] = React.useState(-1);
+    
+    let from;
+    if (user) {
+        from = user.get('ethAddress');
+    }
+
+    const disabled = !user || amount <= 0 || amount > available;
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -32,27 +38,6 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
     const handleClose = () => {
         setOpen(false);
     };
-    
-    let from;
-    if (user) {
-        from = user.get('ethAddress');
-    }
-
-    const getAvailable = async () => {
-        const resp = await contract_erc20copy.methods.balanceOf(from).call();
-        console.log(resp)
-        setAvailable(
-            resp / peg_multiplier
-        );
-    }
-
-    React.useEffect(() => {
-        while (available < 0) {
-            getAvailable();
-        }        
-    }, []);
-
-    console.log(available)
 
     async function deposit_collateral() {
         await contract_erc20copy.methods.approve(
@@ -83,7 +68,7 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
                 startIcon={<Avatar
                     src={usdcLogo}
                 />}
-                disabled={!user}
+                disabled={!user || available < 0}
             >
                 Transfer
             </Button>
@@ -117,14 +102,11 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
                         // fullWidth
                         variant="standard"
                         type='number'
-                        helperText={available.toFixed(2) + ' USDC available'}
+                        helperText={available.toFixed(2) + ' USDC available for deposit'}
 
                         value={amount}
                         onChange={event => {
-                            const value = event.target.value;
-                            if (value > 0 && value <= available) {
-                                setAmount(value);
-                            }
+                            setAmount(event.target.value);
                         }}
                     />
                 </DialogContent>
@@ -133,6 +115,7 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
                     <Button
                         variant='contained'
                         onClick={deposit_collateral}
+                        disabled={disabled}
                     >
                         Deposit
                     </Button>
@@ -140,6 +123,7 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy }) {
                         onClick={withdraw_collateral}
                         variant='contained'
                         color='error'
+                        disabled={disabled}
                     >
                         Withdraw
                     </Button>

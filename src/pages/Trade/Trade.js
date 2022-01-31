@@ -51,7 +51,6 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
         ];
 
         const values = await Promise.all(promises);
-        // console.log(values)
         let [
             amm, user_base, user_quote, user_collateral, oracle_price, tvl
         ] = values;
@@ -75,7 +74,7 @@ export default function App({ contract_avaperps, contract_erc20copy, net_id, add
     if (net_id !== 43113) {
         return (
             <Loading
-                message={`Wrong network. Should be Avalanche Fuji Testnet (Network ID 43113).`}
+                message
             />
         );
     }

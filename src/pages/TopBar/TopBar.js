@@ -15,8 +15,34 @@ import DepositButton from './DepositButton';
 import FaucetButton from './FaucetButton';
 import Login from './Login';
 import logo from '../../static/VistaRedLogo.png';
+const peg_multiplier = 10 ** 8;
 
-export default function TopBar({ contract_avaperps, contract_erc20copy }) {
+export default function TopBar({ contract_avaperps, contract_erc20copy, address_avaperps }) {
+    const { user } = useMoralis();
+    const [available, setAvailable] = React.useState(-1);
+    
+    let from;
+    if (user) {
+        from = user.get('ethAddress');
+    }
+
+    const getAvailable = async () => {
+        const resp = await contract_erc20copy.methods.allowance(from, address_avaperps).call();
+        setAvailable(
+            resp / peg_multiplier
+        );
+    }
+
+    React.useEffect(() => {
+        getAvailable();
+    }, [available]);
+
+    if (available < 0) {
+        getAvailable();
+    }
+
+    console.log(available)
+
     return (
         <AppBar
             position="fixed"
@@ -41,11 +67,14 @@ export default function TopBar({ contract_avaperps, contract_erc20copy }) {
                 <FaucetButton
                     contract_erc20copy={contract_erc20copy}
                     contract_avaperps={contract_avaperps}
+                    address_avaperps={address_avaperps}
                 />
 
                 <DepositButton
                     contract_erc20copy={contract_erc20copy}
                     contract_avaperps={contract_avaperps}
+                    available={available}
+                    address_avaperps={address_avaperps}
                 />
 
                 <Login />

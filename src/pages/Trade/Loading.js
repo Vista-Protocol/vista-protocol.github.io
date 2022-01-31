@@ -17,7 +17,7 @@ export default function SimpleBackdrop({ message = false }) {
         <Typography
             variant='h4'
         >
-            {message}
+            Wrong network. Select Avalanche Fuji Testnet (Network ID 43113) and refresh.
         </Typography>
     ) : (
         <CircularProgress color="inherit" />

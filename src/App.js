@@ -19,7 +19,7 @@ import SelectPerp from './SelectPerp';
 import abi_avaperps from './contracts/abi_avaperps.json';
 import abi_erc20copy from './contracts/abi_erc20copy.json';
 
-const address_avaperps = '0x351Cee25E38FF6b8b9BF1044658e71847C518d1f';
+const address_avaperps = '0xb46EB53BEe746a9c82310EB8481B72d61F58e2F9';
 const address_erc20copy = '0x8dC460712519ab2Ed3028F0cff0D044c5EC0Df0C';
 
 const drawerWidth = 0;
@@ -29,7 +29,7 @@ export default function ResponsiveDrawer() {
     const [contract_avaperps, set_contract_avaperps] = React.useState();
     const [contract_erc20copy, set_contract_erc20copy] = React.useState();
     const [net_id, set_net_id] = React.useState();
-    const [perp, set_perp] = React.useState(0);
+    const [perp, set_perp] = React.useState(1);
     const [page, set_page] = React.useState('faucet');
 
     const get_net_id = async () => {
@@ -53,7 +53,11 @@ export default function ResponsiveDrawer() {
         get_net_id();
     }, [perp]);
 
-    const perps = 'avax btc eth link'.toUpperCase().split(' ');
+    if (contract_avaperps == null) {
+        get_net_id();
+    }    
+
+    const perps = 'index avax btc eth link'.toUpperCase().split(' ');
     const perp_name = perps[perp];
 
     const trade = (
@@ -83,7 +87,7 @@ export default function ResponsiveDrawer() {
         <Box
             sx={{ display: 'flex' }}
             style={{
-                background: 'linear-gradient(black, fireBrick)',
+                background: 'linear-gradient(black, firebrick)',
                 height: '100vh'
             }}
         >
@@ -91,6 +95,7 @@ export default function ResponsiveDrawer() {
             <TopBar
                 contract_erc20copy={contract_erc20copy}
                 contract_avaperps={contract_avaperps}
+                address_avaperps={address_avaperps}
                 pages={pages}
                 set_page={set_page}
             />

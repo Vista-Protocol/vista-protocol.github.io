@@ -8,6 +8,7 @@ import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 
 import ShortButtons from './ShortButtons';
 import LongButtons from './LongButtons';
+import IndexInfo from './../../IndexInfo/IndexInfo';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -23,8 +24,27 @@ export default function OrderShort({ state, contract_avaperps, value, children }
     const { user } = useMoralis();
 
     const {
-        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, peg_multiplier
+        amm_base, amm_quote, user_base, user_quote, user_collateral, avax_price, peg_multiplier, perp
     } = state;
+
+    const [composition, set_composition] = React.useState();
+
+    const get_composition = async () => {
+        const comp = await contract_avaperps.methods.composition().call();
+        set_composition(comp);
+    }
+
+    if (composition == null) {
+        get_composition();
+    }
+
+    console.log(composition)    
+
+    const info = perp ? <div /> : (
+        <IndexInfo
+            composition={composition}
+        />
+    );
 
     const mark_price = amm_quote / amm_base;
     
@@ -51,7 +71,9 @@ export default function OrderShort({ state, contract_avaperps, value, children }
                     inputProps={{ style: { fontSize: 30 } }}
 
                     value={amount}
-                    onChange={event => setAmount(event.target.value)}
+                    onChange={event => {
+                        setAmount(event.target.value);
+                    }}
                 />
             </Grid>
 
@@ -78,6 +100,8 @@ export default function OrderShort({ state, contract_avaperps, value, children }
                             amount / mark_price
                         ).toFixed(2)
                     } (EST.)
+                    
+                    {info}
                 </Typography>
             </Grid>
 
