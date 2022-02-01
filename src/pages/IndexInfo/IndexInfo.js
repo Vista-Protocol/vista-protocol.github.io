@@ -75,12 +75,13 @@ export default function CustomizedDialogs({ composition }) {
                     Avalanche INDEX Description
                 </BootstrapDialogTitle>
                 <DialogContent dividers>
-                    <Typography gutterBottom
-                        style={{ whiteSpace: "pre-wrap" }}
-                    >
-                        The INDEX token derives its price from the Avalanche network's top 10 projects by market cap, excluding stablecoins.
-                        INDEX was established on 2022-01-19T07:50:00.000Z at 1 USDC per token, containing LINK, REN, AMPL, ORN, AVAX, ALEPH, SWAP, ANY, SUSHI, and REEF.
+                    <Typography gutterBottom>
+                        INDEX is an equal-weight 'ETF' of the Avalanche network's top 10 projects by market cap, excluding stablecoins.
                         If one of INDEX's component tokens drops out of the top 10, a 'replace_token' function can be called by a DAO vote.
+                    </Typography>
+                    
+                    <Typography gutterBottom>
+                        INDEX was established on 2022-01-19T07:50:00.000Z at 1 USDC per token, containing LINK, REN, AMPL, ORN, AVAX, ALEPH, SWAP, ANY, SUSHI, and REEF.
                         INDEX's price is updated every 5 minutes, with automatic rebalancing if a single component exceeds 20% weight.
                     </Typography>
 
@@ -90,7 +91,7 @@ export default function CustomizedDialogs({ composition }) {
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={handleClose}>
-                        Save changes
+                        Close
                     </Button>
                 </DialogActions>
             </BootstrapDialog>

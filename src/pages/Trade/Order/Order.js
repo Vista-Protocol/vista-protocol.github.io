@@ -13,7 +13,7 @@ import IndexInfo from './../../IndexInfo/IndexInfo';
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
-    // textAlign: 'center',
+    textAlign: 'center',
     color: theme.palette.text.primary,
 }));
 
@@ -117,8 +117,10 @@ export default function OrderShort({ state, contract_avaperps, value, children }
                         ).toFixed(2)
                     }
                     
-                    {info}
                 </Typography>
+
+                {info}
+
             </Grid>
 
             <Box mt={2}>

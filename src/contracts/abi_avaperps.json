@@ -1,68 +1,5 @@
 [
 	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "fallback"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "amms",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "oracle",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "base_asset_amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "quote_asset_amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "int256",
-				"name": "cum_funding_rate",
-				"type": "int256"
-			},
-			{
-				"internalType": "int256",
-				"name": "funding_rate",
-				"type": "int256"
-			},
-			{
-				"internalType": "int256",
-				"name": "periodicity",
-				"type": "int256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "mark_twap",
-				"type": "uint256"
-			},
-			{
-				"internalType": "int256",
-				"name": "mark_twap_ts",
-				"type": "int256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -96,34 +33,6 @@
 		"name": "close_short",
 		"outputs": [],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "composition",
-		"outputs": [
-			{
-				"internalType": "string[10]",
-				"name": "",
-				"type": "string[10]"
-			},
-			{
-				"internalType": "uint256[10]",
-				"name": "",
-				"type": "uint256[10]"
-			},
-			{
-				"internalType": "uint256[10]",
-				"name": "",
-				"type": "uint256[10]"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -173,25 +82,6 @@
 		"name": "open_short",
 		"outputs": [],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "oracle_price",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -265,6 +155,133 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount_usdc",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw_collateral",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "amms",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "oracle",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "base_asset_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "quote_asset_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "int256",
+				"name": "cum_funding_rate",
+				"type": "int256"
+			},
+			{
+				"internalType": "int256",
+				"name": "funding_rate",
+				"type": "int256"
+			},
+			{
+				"internalType": "int256",
+				"name": "periodicity",
+				"type": "int256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "mark_twap",
+				"type": "uint256"
+			},
+			{
+				"internalType": "int256",
+				"name": "mark_twap_ts",
+				"type": "int256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "composition",
+		"outputs": [
+			{
+				"internalType": "string[10]",
+				"name": "",
+				"type": "string[10]"
+			},
+			{
+				"internalType": "uint256[10]",
+				"name": "",
+				"type": "uint256[10]"
+			},
+			{
+				"internalType": "uint256[10]",
+				"name": "",
+				"type": "uint256[10]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "oracle_price",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -308,22 +325,5 @@
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount_usdc",
-				"type": "uint256"
-			}
-		],
-		"name": "withdraw_collateral",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	}
 ]

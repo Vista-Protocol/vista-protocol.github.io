@@ -57,6 +57,9 @@ export default function OrderLong({ state, contract_avaperps, amount }) {
                         await contract_avaperps.methods.open_long(
                             perp, amount * peg_multiplier
                         ).send({ from });
+
+                        window.location.reload();
+
                     }}
                 >
                     Open Long: {open_long_base_amount()} {perp_name}-PERP
@@ -73,6 +76,9 @@ export default function OrderLong({ state, contract_avaperps, amount }) {
                         await contract_avaperps.methods.close_long(
                             perp, amount * peg_multiplier
                         ).send({ from });
+
+                        window.location.reload();
+
                     }}
                 >
                     Close Long: {close_long_base_amount()} {perp_name}-PERP

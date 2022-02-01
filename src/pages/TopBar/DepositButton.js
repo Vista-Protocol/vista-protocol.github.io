@@ -26,7 +26,7 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy, avai
         from = user.get('ethAddress');
     }
 
-    const disabled = !user || amount <= 0 || amount > available;
+    const disabled = !user || amount <= 0;
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -46,6 +46,8 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy, avai
         ).send({ from });
 
         handleClose();
+
+        window.location.reload();
     }
 
     async function withdraw_collateral() {
@@ -54,6 +56,9 @@ export default function FormDialog({ contract_avaperps, contract_erc20copy, avai
         ).send({ from });
 
         handleClose();
+
+        window.location.reload();
+
     }
 
     return (
