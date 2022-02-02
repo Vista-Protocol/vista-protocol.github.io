@@ -86,7 +86,8 @@ export default function ResponsiveDrawer() {
             sx={{ display: 'flex' }}
             style={{
                 background: 'linear-gradient(black, firebrick)',
-                height: '100vh'
+                minHeight: '100%',
+                // height: '100vh'
             }}
         >
             <CssBaseline />
